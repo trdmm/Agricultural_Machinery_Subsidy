@@ -36,7 +36,7 @@ public class CommonTask {
     @Autowired
     private SubsidyHttpClient subsidyHttpClient;
 
-    @Scheduled(fixedRate = 15 * 24 * 60 * 60 * 1000)
+    @Scheduled(cron = "0 25 19 ? * SAT")
     public void task() {
         ThreadPoolExecutor pool =
             ExecutorBuilder.create().setCorePoolSize(38).setMaxPoolSize(40).setAllowCoreThreadTimeOut(true).build();

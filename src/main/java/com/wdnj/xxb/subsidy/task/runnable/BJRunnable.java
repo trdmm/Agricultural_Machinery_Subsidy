@@ -26,7 +26,7 @@ public class BJRunnable implements Runnable {
 
     @Override
     public void run() {
-        SubsidyCommon.getSubsidy("北京",new int[]{2018,2019,2020},httpClient,
+        SubsidyCommon.getSubsidy("北京",new int[]{2018,2020},httpClient,
             ConstantUtil.BJ_PUBLIC_URL,ConstantUtil.BJ_LIST_URL, dir);
     }
 }
