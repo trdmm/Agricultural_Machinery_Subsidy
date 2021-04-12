@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.excel.EasyExcel;
 import com.dtflys.forest.exceptions.ForestNetworkException;
 import com.dtflys.forest.http.ForestCookie;
@@ -46,6 +47,7 @@ public class SubsidyCommon {
      */
     public static void getSubsidy(String region, int[] years, SubsidyHttpClient httpClient, String publicUrl,
         String listUrl, File dir) {
+        years = ArrayUtil.reverse(years);
         for (int year : years) {
             /* 存放cookie */
             List<ForestCookie> cookies = new ArrayList<>();

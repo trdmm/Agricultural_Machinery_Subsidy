@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import cn.hutool.core.util.ArrayUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -134,5 +135,14 @@ public class CommonTest {
         log.warn("第{}次任务,准备睡眠", i);
         ThreadUtil.sleep(10 * 1000);
         log.info("第{}次任务睡眠完成", i);
+    }
+
+    @Test
+    public void test8() {
+        int[] years = {2018, 2019, 2020};
+        years = ArrayUtil.reverse(years);
+        for (int i1 : years) {
+            log.info("年份:{}",i1);
+        }
     }
 }
