@@ -26,7 +26,9 @@ public class SiChuanRunnable implements Runnable {
 
     @Override
     public void run() {
-        SubsidyCommon.getSubsidy("四川", new int[] {2018, 2019, 2020}, httpClient,
+        //SubsidyCommon.getSubsidy("四川", new int[] {2018, 2019, 2020}, httpClient,
+        //    ConstantUtil.SICHUAN_PUBLIC_URL, ConstantUtil.SICHUAN_LIST_URL, dir);
+        SubsidyCommon.getSubsidy("四川", new int[] {2020}, httpClient,
             ConstantUtil.SICHUAN_PUBLIC_URL, ConstantUtil.SICHUAN_LIST_URL, dir);
     }
 }

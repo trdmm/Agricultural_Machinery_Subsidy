@@ -1,4 +1,4 @@
-package com.wdnj.xxb.subsidy.entity;
+package com.wdnj.xxb.subsidy.entity.subsidyInfo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 
@@ -59,6 +59,9 @@ public class SubsidyInfo {
 
     @ExcelProperty("单台补贴额(元)")
     private String perSubsidyAmount;
+
+    @ExcelProperty("贴息补贴额(元)")
+    private String discountSubsidy;
 
     @ExcelProperty("总补贴额(元)")
     private String subsidyAmounts;

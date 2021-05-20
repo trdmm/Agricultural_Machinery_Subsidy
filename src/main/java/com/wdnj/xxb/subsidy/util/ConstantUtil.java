@@ -164,4 +164,17 @@ public class ConstantUtil {
     // 新疆建设兵团
     public static final String XINJIANGBINGTUAN_PUBLIC_URL = "http://47.102.150.27:7118/pub/gongshi";
     public static final String XINJIANGBINGTUAN_LIST_URL = "http://47.102.150.27:7118/pub/GongShiSearch";
+
+
+
+    // -------------------------------------------------企业供货-------------------------------------------------
+
+    // 湖北
+    public static final String QIYEGONGHUO_HUBEI = "http://nyt.hubei.gov.cn/gzbtgl/Bt18To20/Pub/PubQiYProductList";
+
+    // 浙江
+    public static final String QIYEGONGHUO_ZHEJIANG = "http://223.4.70.98:2018/GZBT2018To20/Pub/PubQiYProductList";
+
+    // 福建
+    public static final String QIYEGONGHUO_FUJIAN = "http://220.160.52.171:2022/Pub/PubQiYProductList";
 }

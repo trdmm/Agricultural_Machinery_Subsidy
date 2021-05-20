@@ -6,11 +6,15 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.wdnj.xxb.subsidy.task.fhrunnable.GH_FuJianRunnable;
+import com.wdnj.xxb.subsidy.task.fhrunnable.GH_HubeiRunnable;
+import com.wdnj.xxb.subsidy.task.fhrunnable.GH_ZheJiangRunnable;
 import com.wdnj.xxb.subsidy.task.runnable.*;
 import com.wdnj.xxb.subsidy.util.SubsidyHttpClient;
 
@@ -33,16 +37,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommonTask {
 
-    @Autowired
+    @Resource
     private SubsidyHttpClient subsidyHttpClient;
 
-    @Scheduled(cron = "0 25 19 ? * SAT")
-    public void task() {
+     @Scheduled(cron = "0 0 21 ? * FRI")
+    // @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
+    public void getSubsidy() {
         ThreadPoolExecutor pool =
             ExecutorBuilder.create().setCorePoolSize(38).setMaxPoolSize(40).setAllowCoreThreadTimeOut(true).build();
 
         String rootDirPath = FileUtil.getWebRoot().getPath();
-        File dir = FileUtil.mkdir(rootDirPath + "/Excel/" + DateUtil.today());
+        File dir = FileUtil.mkdir(rootDirPath + "/Excel/" + DateUtil.today() + "/补贴查询");
         log.info("文件夹已创建,开始处理");
         List<CompletableFuture<Void>> list = new ArrayList<>();
 
@@ -161,8 +166,28 @@ public class CommonTask {
         list.add(xinJiangJianSheBingTuanFuture);
 
         CompletableFuture<Void> allOf = CompletableFuture.allOf(list.toArray(new CompletableFuture[0]));
-        log.info("任务已提交,坐等~~");
+        log.info("补贴爬取任务已提交,坐等~~~");
         allOf.join();
-        log.info("任务已完成");
+        log.info("补贴爬取任务已完成.");
+    }
+
+    @Scheduled(cron = "0 0 21 ? * SAT")
+    //@Scheduled(fixedRate = 7 * 24 * 60 * 60 * 1000)
+    public void getQiYeGongHuo() {
+        String rootDirPath = FileUtil.getWebRoot().getPath();
+        File dir = FileUtil.mkdir(rootDirPath + "/Excel/" + DateUtil.today() + "/企业供货");
+        log.info("文件夹已创建,开始处理");
+
+        CompletableFuture<Void> huBeiFuture =
+            CompletableFuture.runAsync(new GH_HubeiRunnable(subsidyHttpClient, dir));
+        CompletableFuture<Void> zheJiangFuture =
+            CompletableFuture.runAsync(new GH_ZheJiangRunnable(subsidyHttpClient, dir));
+        CompletableFuture<Void> fuJianFuture =
+            CompletableFuture.runAsync(new GH_FuJianRunnable(subsidyHttpClient, dir));
+
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(huBeiFuture, zheJiangFuture, fuJianFuture);
+        log.info("企业供货任务已提交,坐等~~~");
+        allOf.join();
+        log.info("企业供货任务完成.");
     }
 }
