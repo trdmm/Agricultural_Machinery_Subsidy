@@ -2,7 +2,7 @@ package com.wdnj.xxb.subsidy.task.fhrunnable;
 
 import java.io.File;
 
-import com.wdnj.xxb.subsidy.task.SubsidyCommon;
+import com.wdnj.xxb.subsidy.util.SubsidyCommon;
 import com.wdnj.xxb.subsidy.util.ConstantUtil;
 import com.wdnj.xxb.subsidy.util.SubsidyHttpClient;
 
@@ -25,6 +25,5 @@ public class GH_FuJianRunnable implements Runnable {
     @Override
     public void run() {
         SubsidyCommon.getFhInfo("福建", subsidyHttpClient, dir, ConstantUtil.QIYEGONGHUO_FUJIAN);
-
     }
 }

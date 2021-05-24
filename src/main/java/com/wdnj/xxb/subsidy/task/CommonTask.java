@@ -40,8 +40,8 @@ public class CommonTask {
     @Resource
     private SubsidyHttpClient subsidyHttpClient;
 
-     @Scheduled(cron = "0 0 21 ? * FRI")
     // @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
+    @Scheduled(cron = "0 0 21 ? * FRI")
     public void getSubsidy() {
         ThreadPoolExecutor pool =
             ExecutorBuilder.create().setCorePoolSize(38).setMaxPoolSize(40).setAllowCoreThreadTimeOut(true).build();
@@ -171,8 +171,8 @@ public class CommonTask {
         log.info("补贴爬取任务已完成.");
     }
 
-    @Scheduled(cron = "0 0 21 ? * SAT")
     //@Scheduled(fixedRate = 7 * 24 * 60 * 60 * 1000)
+    @Scheduled(cron = "0 0 20 ? * SAT")
     public void getQiYeGongHuo() {
         String rootDirPath = FileUtil.getWebRoot().getPath();
         File dir = FileUtil.mkdir(rootDirPath + "/Excel/" + DateUtil.today() + "/企业供货");

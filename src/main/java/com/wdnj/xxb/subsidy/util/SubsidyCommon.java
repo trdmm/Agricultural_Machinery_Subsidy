@@ -1,22 +1,21 @@
-package com.wdnj.xxb.subsidy.task;
+package com.wdnj.xxb.subsidy.util;
 
-import cn.hutool.core.date.StopWatch;
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.core.util.ArrayUtil;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.alibaba.excel.EasyExcel;
 import com.dtflys.forest.exceptions.ForestNetworkException;
 import com.dtflys.forest.http.ForestCookie;
 import com.wdnj.xxb.subsidy.entity.factoryFhInfo.FhInfo;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.RequestBody;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.SubsidyInfo;
-import com.wdnj.xxb.subsidy.util.DocumentUtil;
-import com.wdnj.xxb.subsidy.util.SubsidyHttpClient;
-import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import cn.hutool.core.date.StopWatch;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.ArrayUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 描述:...<br>
@@ -89,11 +88,11 @@ public class SubsidyCommon {
                         EasyExcel.write(FileUtil.getCanonicalPath(mkdir) + "/补贴车辆-" + i + ".xlsx", SubsidyInfo.class)
                             .sheet().doWrite(list);
                         list.clear();
-                        ThreadUtil.safeSleep(5 * 1000);
+                        ThreadUtil.safeSleep(8 * 1000);
                     } else if ("山西".equals(region) || "天津".equals(region)) {
                         ThreadUtil.safeSleep(10 * 1000);
                     } else {
-                        ThreadUtil.safeSleep(3000);
+                        ThreadUtil.safeSleep(5000);
                     }
                 } catch (ForestNetworkException e) {
                     i--;
@@ -112,7 +111,7 @@ public class SubsidyCommon {
             list.clear();
             httpClient.sendWXMsg(region + " " + year + " over", "共耗时" + stopWatch.getLastTaskTimeMillis() + "ms");
             // 一年结束 停 3min
-            ThreadUtil.safeSleep(3 * 60 * 1000);
+            ThreadUtil.safeSleep(5 * 60 * 1000);
         }
     }
 
@@ -137,7 +136,7 @@ public class SubsidyCommon {
         int page = DocumentUtil.getFhPages(result);
         log.info("{} 共 {} 页", area, page);
 
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= page; i++) {
             try {
                 String pageResult = subsidyHttpClient.queryFhInfo(url, i, requestBody);
                 List<FhInfo> list = DocumentUtil.getFhResult(pageResult);

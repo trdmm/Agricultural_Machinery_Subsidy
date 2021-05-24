@@ -19,9 +19,10 @@ public class ConstantUtil {
     // 天津
     public final static String TJ_PUBLIC_URL = "http://60.28.163.139:2018/GouZBT_2018T20/pub/gongshi";
     public final static String TJ_LIST_URL = "http://60.28.163.139:2018/GouZBT_2018T20/pub/GongShiSearch";
+
     // 河北
-    public final static String HEBEI_PUBLIC_URL = "http://218.12.43.28:2018/pub/gongshi";
-    public final static String HEBEI_LIST_URL = "http://218.12.43.28:2018/pub/GongShiSearch";
+    public final static String HEBEI_PUBLIC_URL = "http://218.12.43.28:2018/GouZBT2018To20/pub/gongshi";
+    public final static String HEBEI_LIST_URL = "http://218.12.43.28:2018/GouZBT2018To20/pub/GongShiSearch";
 
     // 山西
     public final static String SHANXI1_PUBLIC_URL = "http://218.26.228.162:805/pub/gongshi";
@@ -41,8 +42,8 @@ public class ConstantUtil {
     public final static String HENAN_LIST_URL = "http://222.143.21.233:2018/18To20/pub/GongShiSearch";
 
     // 湖北
-    public final static String HUBEI_PUBLIC_URL = "http://223.75.52.247:2018/gzbtgl/pub/gongshi";
-    public final static String HUBEI_LIST_URL = "http://223.75.52.247:2018/gzbtgl/pub/GongShiSearch";
+    public final static String HUBEI_PUBLIC_URL = "http://nyt.hubei.gov.cn/gzbtgl/Bt18To20/pub/gongshi";
+    public final static String HUBEI_LIST_URL = "http://nyt.hubei.gov.cn/gzbtgl/Bt18To20/pub/GongShiSearch";
 
     // 湖南
     public final static String HUNAN_PUBLIC_URL = "http://xt.hnnjgzbt.com/pub/gongshi";

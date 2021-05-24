@@ -1,6 +1,6 @@
 package com.wdnj.xxb.subsidy.task.runnable;
 
-import com.wdnj.xxb.subsidy.task.SubsidyCommon;
+import com.wdnj.xxb.subsidy.util.SubsidyCommon;
 import com.wdnj.xxb.subsidy.util.ConstantUtil;
 import com.wdnj.xxb.subsidy.util.SubsidyHttpClient;
 
