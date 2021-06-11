@@ -7,6 +7,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.net.NetUtil;
+import cn.hutool.core.util.StrUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -323,4 +325,23 @@ public class CommonTest {
         Console.log("xxx存在?", CollectionUtil.isNotEmpty(xxx));
     }
 
+    @Test
+    public void test11(){
+        String ipByHost = NetUtil.getIpByHost("nyt.hubei.gov.cn");
+        Console.log(ipByHost);
+
+        boolean ping = NetUtil.ping(ipByHost);
+        Console.log(ping);
+
+        boolean ping1 = NetUtil.ping("42.123.116.194");
+        Console.log(ping1);
+
+        boolean ping2 = NetUtil.ping("202.61.189.161");
+        Console.log(ping2);
+
+
+        boolean ping3 = NetUtil.ping("nyt.hubei.gov.cn");
+        Console.log(ping3);
+
+    }
 }

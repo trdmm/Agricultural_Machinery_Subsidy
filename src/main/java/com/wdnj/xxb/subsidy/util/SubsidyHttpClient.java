@@ -49,5 +49,11 @@ public interface SubsidyHttpClient {
     @Get(url = "${url}")
     String queryFhInfo(@DataVariable("url") String url,@Query("pageIndex") int pageIndex, @Query com.wdnj.xxb.subsidy.entity.factoryFhInfo.RequestBody requestBody);
 
-
+    /**
+     * 获取最新的url
+     * @param url 请求连接的地址
+     * @return JS文件
+     */
+    @Get(url = "${url}")
+    String getLatestUrl(@DataVariable("url") String url);
 }

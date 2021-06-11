@@ -2,3 +2,4 @@ forest:
   logEnabled: false
   connect-timeout: 180000
   timeout: 180000
+  retry-count: 5

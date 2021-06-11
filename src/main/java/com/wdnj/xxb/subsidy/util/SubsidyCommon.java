@@ -96,11 +96,11 @@ public class SubsidyCommon {
                     }
                 } catch (ForestNetworkException e) {
                     i--;
-                    log.error("{} {} 年,第 {} 页 网络 错误,休眠60s", region, year, i);
+                    log.warn("{} {} 年,第 {} 页 网络 错误,休眠60s", region, year, i);
                     ThreadUtil.safeSleep(60 * 1000);
                 } catch (Exception e) {
                     i--;
-                    log.error("{} {} 年,第 {} 页出错,休眠3min", region, year, i);
+                    log.warn("{} {} 年,第 {} 页出错,休眠3min", region, year, i);
                     ThreadUtil.safeSleep(3 * 60 * 1000);
                 }
             }
@@ -151,7 +151,7 @@ public class SubsidyCommon {
                 //ThreadUtil.safeSleep(1000);
             } catch (Exception e) {
                 i--;
-                log.error("{} 第 {} 页出错,休眠3min", area, i);
+                log.warn("{} 第 {} 页出错,休眠3min", area, i);
                 ThreadUtil.safeSleep(3 * 60 * 1000);
             }
         }
