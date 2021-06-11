@@ -48,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommonTask {
 
-    private final String rootDirPath = FileUtil.getWebRoot().getPath();
+    private final String rootDirPath = FileUtil.getWebRoot().getParentFile().getPath();
 
     @Resource
     private SubsidyHttpClient subsidyHttpClient;
@@ -59,8 +59,8 @@ public class CommonTask {
     /**
      * 每周五 15 点获取最新补贴公示地址
      */
-    @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
-    //@Scheduled(cron = "0 0 15 ? * FRI")
+    //@Scheduled(fixedRate = 24 * 60 * 60 * 1000)
+    @Scheduled(cron = "0 0 15 ? * FRI")
     public void getLatestUrl(){
         //String rootDirPath = FileUtil.getWebRoot().getPath();
         String url = FileUtil.readUtf8String(rootDirPath + "/conf/url");
@@ -154,7 +154,7 @@ public class CommonTask {
         log.info("文件夹已创建,开始处理");
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
-        provinceInfos.parallelStream().forEach(provinceInfo -> {
+        provinceInfos.forEach(provinceInfo -> {
             String province = provinceInfo.getProvince();
             String url = provinceInfo.getUrl();
 
