@@ -48,6 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommonTask {
 
+    // 打正式包用,本地测试时会被覆盖
     private final String rootDirPath = FileUtil.getWebRoot().getParentFile().getPath();
 
     @Resource
@@ -59,10 +60,11 @@ public class CommonTask {
     /**
      * 每周五 15 点获取最新补贴公示地址
      */
-    //@Scheduled(fixedRate = 24 * 60 * 60 * 1000)
-    @Scheduled(cron = "0 0 15 ? * FRI")
+    // @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
+    @Scheduled(cron = "0 0 15-17 ? * FRI")
     public void getLatestUrl(){
-        //String rootDirPath = FileUtil.getWebRoot().getPath();
+        // TODO 打包时注释
+        // String rootDirPath = FileUtil.getWebRoot().getPath();
         String url = FileUtil.readUtf8String(rootDirPath + "/conf/url");
         String provinceYearInfo = FileUtil.readUtf8String(rootDirPath + "/conf/ProvinceYearInfo.json");
 
