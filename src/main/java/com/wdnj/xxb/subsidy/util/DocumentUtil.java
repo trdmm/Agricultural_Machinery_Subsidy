@@ -42,7 +42,11 @@ public class DocumentUtil {
         Document document = Jsoup.parse(html);
         Element tableBody = document.getElementById("list-pub");
         Elements trs = tableBody.select("tr");
-        if ("江西".equals(area)) {
+        if (trs.size() == 1) {
+            // 没有数据,直接返回
+            return list;
+        }
+        if (area.contains("江西")) {
             trs.forEach(tr -> {
                 Elements tds = tr.select("td");
                 SubsidyInfo subsidyInfo = new SubsidyInfo();
@@ -200,11 +204,26 @@ public class DocumentUtil {
      */
     public static String extractBodyCookie(String html) {
         Document document = Jsoup.parse(html);
-        Element form = document.getElementsByClass("ser").get(0).select("form").get(0);
-        Element cookieInput = form.getElementsByAttributeValue("name", "__RequestVerificationToken").get(0);
+        Elements ser = document.getElementsByClass("ser");
+        if (ser.size() == 0) {
+            // 没找到token,发送消息查看逻辑是否已修改
+            return "";
+        }
+        Element form = ser.get(0).select("form").get(0);
+        Elements tokenValue = form.getElementsByAttributeValue("name", "__RequestVerificationToken");
+        if (tokenValue.size() == 0){
+            // 没找到token,发送消息查看逻辑是否已修改
+            return "";
+        }
+        Element cookieInput = tokenValue.get(0);
 
         // 页数
-        Element lastPage = document.getElementsByClass("pagerItem").get(0).select("a").last();
+        Elements pagerItem = document.getElementsByClass("pagerItem");
+        if (pagerItem.size() == 0) {
+            // 没数据,返回 null,调用方判断是否退出
+            return null;
+        }
+        Element lastPage = pagerItem.get(0).select("a").last();
         String target = lastPage.attr("href");
         int pages = NumberUtil.parseInt(target.split("=")[1]);
 

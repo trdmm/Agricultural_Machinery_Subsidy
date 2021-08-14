@@ -2,8 +2,11 @@ package com.wdnj.xxb.subsidy.util;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.dtflys.forest.exceptions.ForestNetworkException;
 import com.dtflys.forest.http.ForestCookie;
@@ -15,6 +18,7 @@ import cn.hutool.core.date.StopWatch;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
+import com.wdnj.xxb.subsidy.entity.subsidyInfo.YearInfo;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -32,16 +36,18 @@ public class SubsidyCommon {
      * 查询补贴数据
      *
      * @param region     地区
-     * @param years      年份数组
      * @param httpClient http客户端
-     * @param publicUrl  公示页URL
-     * @param listUrl    查询结果页URL
+     * @param yearInfos 年份+url 信息
      * @param dir        本次查询目录file
      */
-    public static void getSubsidy(String region, int[] years, SubsidyHttpClient httpClient, String publicUrl,
-                                  String listUrl, File dir) {
-        years = ArrayUtil.reverse(years);
-        for (int year : years) {
+    public static void getSubsidy(String region, SubsidyHttpClient httpClient, Collection<YearInfo> yearInfos, File dir) {
+        for (YearInfo yearInfo : yearInfos) {
+            int year = yearInfo.getYear();
+            // 公示地址
+            String publicUrl = yearInfo.getUrl();
+            // 点击搜索后地址
+            String listUrl = publicUrl.replace("gongshi", "GongShiSearch");
+
             /* 存放cookie */
             List<ForestCookie> cookies = new ArrayList<>();
             /* 打开公示页 */
@@ -49,6 +55,17 @@ public class SubsidyCommon {
                 (forestRequest, forestCookies) -> cookies.addAll(forestCookies.allCookies()));
             /* 获取页面中的token */
             String token = DocumentUtil.extractBodyCookie(publishPage);
+            if (token == null){
+                // 本年度无数据
+                continue;
+            }
+
+            if (StrUtil.isBlank(token)) {
+                // 没获取到 token,可能逻辑已改变,发送消息
+                httpClient.sendWXMsg(region + "-" + year + "年获取token失败","请查看是否逻辑已修改");
+                continue;
+            }
+
             /* 存放补贴信息 */
             List<SubsidyInfo> list = new ArrayList<>();
             /* 计数 */
@@ -59,7 +76,9 @@ public class SubsidyCommon {
 
             // 动力机械 14
             /* 表单内容 */
-            RequestBody body = RequestBody.builder().year(String.valueOf(year)).requestVerificationToken(token)
+            RequestBody body = RequestBody.builder()
+                .year(String.valueOf(year))
+                .requestVerificationToken(token)
                 // .jiJuLeiXing("收获机械")
                 // .jiJuLeiXingCode("04")
                 // .jiJuLeiXing("动力机械")
@@ -71,8 +90,6 @@ public class SubsidyCommon {
             /* 提取总页数 */
             int pages = DocumentUtil.extractPages(clickQueryResult);
             log.info("{} {} 年总共{}页", region, year, pages);
-            StopWatch stopWatch = new StopWatch();
-            stopWatch.start();
             for (int i = 1; i <= pages; i++) {
                 try {
                     log.debug("开始爬取 {} {} 年,第 {} 页...", region, year, i);
@@ -89,7 +106,7 @@ public class SubsidyCommon {
                             .sheet().doWrite(list);
                         list.clear();
                         ThreadUtil.safeSleep(8 * 1000);
-                    } else if ("山西".equals(region) || "天津".equals(region)) {
+                    } else if (StrUtil.containsAny(region,"山西","天津")) {
                         ThreadUtil.safeSleep(10 * 1000);
                     } else {
                         ThreadUtil.safeSleep(5000);
@@ -104,15 +121,16 @@ public class SubsidyCommon {
                     ThreadUtil.safeSleep(3 * 60 * 1000);
                 }
             }
-            stopWatch.stop();
-            log.warn("{} {} 年已完成,耗时{}ms.", region, year, stopWatch.getLastTaskTimeMillis());
-            EasyExcel.write(FileUtil.getCanonicalPath(mkdir) + "/补贴车辆-" + pages + ".xlsx", SubsidyInfo.class).sheet()
-                .doWrite(list);
-            list.clear();
-            httpClient.sendWXMsg(region + " " + year + " over", "共耗时" + stopWatch.getLastTaskTimeMillis() + "ms");
-            // 一年结束 停 3min
+            log.warn("{} {} 年已完成.", region, year);
+            if (CollectionUtil.isNotEmpty(list)) {
+                EasyExcel.write(FileUtil.getCanonicalPath(mkdir) + "/补贴车辆-" + pages + ".xlsx", SubsidyInfo.class).sheet()
+                    .doWrite(list);
+                list.clear();
+            }
+            // 一年结束 停 5min
             ThreadUtil.safeSleep(5 * 60 * 1000);
         }
+        httpClient.sendWXMsg(region + " over", "");
     }
 
 

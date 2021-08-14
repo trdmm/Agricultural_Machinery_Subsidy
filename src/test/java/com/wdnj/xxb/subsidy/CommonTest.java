@@ -8,7 +8,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.net.NetUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import com.google.common.collect.HashMultimap;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -343,5 +345,20 @@ public class CommonTest {
         boolean ping3 = NetUtil.ping("nyt.hubei.gov.cn");
         Console.log(ping3);
 
+    }
+
+    @Test
+    public void test12(){
+        HashMultimap<String,Map<String,String>> map = HashMultimap.create();
+
+        for (int i = 0; i < 5; i++) {
+            HashMap<String, String> subMap = new HashMap<>();
+            for (int j = 0; j < 5; j++) {
+                subMap.put(RandomUtil.randomString(5),RandomUtil.randomString(8));
+            }
+            map.put("地区 "+i,subMap);
+        }
+
+        Console.log("over");
     }
 }
