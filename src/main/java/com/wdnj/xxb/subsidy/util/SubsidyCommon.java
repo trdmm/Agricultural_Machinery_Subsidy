@@ -92,7 +92,7 @@ public class SubsidyCommon {
             log.info("{} {} 年总共{}页", region, year, pages);
             for (int i = 1; i <= pages; i++) {
                 try {
-                    log.debug("开始爬取 {} {} 年,第 {} 页...", region, year, i);
+                    log.debug("开始爬取 {} {} 年,第 {}/{} 页...", region, year, i, pages);
                     /* 正式开始查询 */
                     String result = httpClient.queryList(listUrl, i, body,
                         (forestRequest, forestCookies) -> forestCookies.addAllCookies(cookies));
