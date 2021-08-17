@@ -10,6 +10,8 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.dtflys.forest.exceptions.ForestNetworkException;
 import com.dtflys.forest.http.ForestCookie;
+import com.wdnj.xxb.subsidy.entity.ding_talk.DingTalkMsg;
+import com.wdnj.xxb.subsidy.entity.ding_talk.Text;
 import com.wdnj.xxb.subsidy.entity.factoryFhInfo.FhInfo;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.RequestBody;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.SubsidyInfo;
@@ -62,7 +64,8 @@ public class SubsidyCommon {
 
             if (StrUtil.isBlank(token)) {
                 // 没获取到 token,可能逻辑已改变,发送消息
-                httpClient.sendWXMsg(region + "-" + year + "年获取token失败","请查看是否逻辑已修改");
+                Text text = new Text(region + "-" + year + "年获取token失败,请查看是否逻辑已修改(沃得)");
+                httpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(text).build());
                 continue;
             }
 
@@ -130,7 +133,8 @@ public class SubsidyCommon {
             // 一年结束 停 5min
             ThreadUtil.safeSleep(5 * 60 * 1000);
         }
-        httpClient.sendWXMsg(region + " over", "");
+        Text text = new Text(region + " over(沃得)");
+        httpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(text).build());
     }
 
 
@@ -148,9 +152,15 @@ public class SubsidyCommon {
         requestBody.setIsFaH(1);
         requestBody.setPageSize(50);
         log.info("{} 开始处理...", area);
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        String result = subsidyHttpClient.queryFhInfo(url, 1, requestBody);
+        String result = null;
+        try {
+            result = subsidyHttpClient.queryFhInfo(url, 1, requestBody);
+        } catch (Exception e) {
+            log.error("{} 企业发货: {},出错!",area,url,e);
+            Text text = new Text(area + " 企业发货出错(沃得): "+url);
+            subsidyHttpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(text).build());
+            return;
+        }
         int page = DocumentUtil.getFhPages(result);
         log.info("{} 共 {} 页", area, page);
 
@@ -173,13 +183,14 @@ public class SubsidyCommon {
                 ThreadUtil.safeSleep(3 * 60 * 1000);
             }
         }
-        EasyExcel.write(FileUtil.getCanonicalPath(mkdir) + "/企业发货-" + page + ".xlsx", FhInfo.class)
-            .sheet().doWrite(fhInfos);
-        fhInfos.clear();
-        stopWatch.stop();
-        long taskTimeMillis = stopWatch.getLastTaskTimeMillis();
-        log.warn("{} 企业供货完成,共耗时 {}ms", area, taskTimeMillis);
-        subsidyHttpClient.sendWXMsg(area + " 企业发货已完成", "共耗时 " + taskTimeMillis);
+        if (CollectionUtil.isNotEmpty(fhInfos)) {
+            EasyExcel.write(FileUtil.getCanonicalPath(mkdir) + "/企业发货-" + page + ".xlsx", FhInfo.class)
+                .sheet().doWrite(fhInfos);
+            fhInfos.clear();
+        }
 
+        log.warn("{} 企业供货完成", area);
+        Text text = new Text(area + " 企业发货已完成(沃得)");
+        subsidyHttpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(text).build());
     }
 }

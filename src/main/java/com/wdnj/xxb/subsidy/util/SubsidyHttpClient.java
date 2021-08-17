@@ -3,6 +3,7 @@ package com.wdnj.xxb.subsidy.util;
 import com.dtflys.forest.annotation.*;
 import com.dtflys.forest.callback.OnLoadCookie;
 import com.dtflys.forest.callback.OnSaveCookie;
+import com.wdnj.xxb.subsidy.entity.ding_talk.DingTalkMsg;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.RequestBody;
 
 /**
@@ -42,8 +43,13 @@ public interface SubsidyHttpClient {
     @Post(url = "${url}", contentType = "multipart/form-data")
     String queryList(@DataVariable("url") String url, @Query("pageIndex") int pageIndex, @Body RequestBody requestBody, OnLoadCookie onLoadCookie);
 
-    @Get(url = "https://xizhi.qqoq.net/XZ523d3a78edaa95bb4c438d94e99b0c03.send")
-    void sendWXMsg(@Query("title") String title, @Query("content") String content);
+
+    /**
+     * 发送钉钉机器人消息
+     * @param msg 钉钉消息(消息内容必须要包含"沃得")
+     */
+    @Post(url = "https://oapi.dingtalk.com/robot/send?access_token=5db19a64bd908da40defb2a35e514372c2abb9e340b57d0fdaf33aba00a71752")
+    void sendDingTalkMsg(@JSONBody DingTalkMsg msg);
 
     //@Get(url = "${url}", contentType = "multipart/form-data")
     @Get(url = "${url}")

@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.annotation.Resource;
 
+import com.wdnj.xxb.subsidy.entity.ding_talk.DingTalkMsg;
+import com.wdnj.xxb.subsidy.entity.ding_talk.Text;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -139,7 +141,8 @@ public class CommonTask {
                 });
             }catch (Exception e){
                 log.error("补贴数据获取最新公示地址错误",e);
-                subsidyHttpClient.sendWXMsg("补贴数据获取最新公示地址错误",DateUtil.now());
+                Text text = new Text("补贴数据获取最新公示地址错误(沃得): " + DateUtil.now());
+                subsidyHttpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(text).build());
             }
         }
 
@@ -168,7 +171,8 @@ public class CommonTask {
         allOf.join();
 
         log.info("补贴数据爬取完成");
-        subsidyHttpClient.sendWXMsg("补贴数据爬取完成",DateUtil.now());
+        Text text = new Text("补贴数据爬取完成(沃得): " + DateUtil.now());
+        subsidyHttpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(text).build());
     }
 
     //@Scheduled(fixedRate = 7 * 24 * 60 * 60 * 1000)
