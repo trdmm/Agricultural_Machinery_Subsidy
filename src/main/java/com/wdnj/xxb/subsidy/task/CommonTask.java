@@ -55,7 +55,7 @@ public class CommonTask {
 
 
     // @Scheduled(fixedRate = 7*24*60*60*1000)
-    @Scheduled(cron = "0 0 21 ? * FRI")
+    @Scheduled(cron = "0 0 19 ? * FRI")
     public void getSubsidyInfo(){
         // 一个地区多个年份,一个年份一个地址
         //             地区        年份    地址
@@ -176,7 +176,7 @@ public class CommonTask {
     }
 
     //@Scheduled(fixedRate = 7 * 24 * 60 * 60 * 1000)
-    @Scheduled(cron = "0 0 20 ? * SAT")
+    // @Scheduled(cron = "0 0 20 ? * SAT")
     public void getQiYeGongHuo() {
         //String rootDirPath = FileUtil.getWebRoot().getPath();
         File dir = FileUtil.mkdir(rootDirPath + "/Excel/" + DateUtil.today() + "/企业供货");

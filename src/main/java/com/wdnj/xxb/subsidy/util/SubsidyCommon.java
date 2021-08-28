@@ -115,12 +115,12 @@ public class SubsidyCommon {
                         ThreadUtil.safeSleep(5000);
                     }
                 } catch (ForestNetworkException e) {
-                    i--;
                     log.warn("{} {} 年,第 {} 页 网络 错误,休眠60s", region, year, i);
+                    i--;
                     ThreadUtil.safeSleep(60 * 1000);
                 } catch (Exception e) {
-                    i--;
                     log.warn("{} {} 年,第 {} 页出错,休眠3min", region, year, i);
+                    i--;
                     ThreadUtil.safeSleep(3 * 60 * 1000);
                 }
             }
