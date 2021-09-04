@@ -7,9 +7,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.math.MathUtil;
 import cn.hutool.core.net.NetUtil;
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.*;
 import com.google.common.collect.HashMultimap;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,8 +29,6 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.thread.ExecutorBuilder;
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ReflectUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -360,5 +358,14 @@ public class CommonTest {
         }
 
         Console.log("over");
+
+
+        int i = NumberUtil.ceilDiv(8180, 40);
+        int i1 = Math.floorDiv(8180, 40);
+
+        int i2 = NumberUtil.ceilDiv(8101, 100);
+        Console.log("{}",i);
+        Console.log("{}",i1);
+        Console.log("{}",i2);
     }
 }

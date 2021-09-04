@@ -4,7 +4,9 @@ import com.dtflys.forest.annotation.*;
 import com.dtflys.forest.callback.OnLoadCookie;
 import com.dtflys.forest.callback.OnSaveCookie;
 import com.wdnj.xxb.subsidy.entity.ding_talk.DingTalkMsg;
-import com.wdnj.xxb.subsidy.entity.subsidyInfo.RequestBody;
+import com.wdnj.xxb.subsidy.entity.subsidyInfo.new_app.RequestBodyNewer;
+import com.wdnj.xxb.subsidy.entity.subsidyInfo.new_app.SubsidyInfoResponse;
+import com.wdnj.xxb.subsidy.entity.subsidyInfo.old_app.RequestBodyOlder;
 
 /**
  * 描述:...<br>
@@ -15,6 +17,7 @@ import com.wdnj.xxb.subsidy.entity.subsidyInfo.RequestBody;
  * @author: Mingming Huang
  * @since: 2021/3/3 17:53
  */
+@BaseRequest(userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0")
 public interface SubsidyHttpClient {
     /**
      * 打开 公示页,获取请求的body内数据
@@ -24,11 +27,11 @@ public interface SubsidyHttpClient {
      * @param onSaveCookie cookie保存
      * @return 网页html
      */
-    @GetRequest(url = "${url}", logEnabled = true)
+    @GetRequest(url = "${url}")
     String openPublishPage(@DataVariable("url") String url, OnSaveCookie onSaveCookie);
 
-    @Post(url = "${url}", logEnabled = true, contentType = "multipart/form-data")
-    String clickQuery(@DataVariable("url") String url, @Body RequestBody requestBody, OnLoadCookie onLoadCookie);
+    @Post(url = "${url}", contentType = "multipart/form-data")
+    String clickQuery(@DataVariable("url") String url, @Body RequestBodyOlder requestBodyOlder, OnLoadCookie onLoadCookie);
 
 
     /**
@@ -41,7 +44,7 @@ public interface SubsidyHttpClient {
      * @return 网页html
      */
     @Post(url = "${url}", contentType = "multipart/form-data")
-    String queryList(@DataVariable("url") String url, @Query("pageIndex") int pageIndex, @Body RequestBody requestBody, OnLoadCookie onLoadCookie);
+    String queryList(@DataVariable("url") String url, @Query("pageIndex") int pageIndex, @Body RequestBodyOlder requestBodyOlder, OnLoadCookie onLoadCookie);
 
 
     /**
@@ -62,4 +65,15 @@ public interface SubsidyHttpClient {
      */
     @Get(url = "${url}")
     String getLatestUrl(@DataVariable("url") String url);
+
+    /**
+     * 获取新版的补贴数据
+     * @param url 查询地址
+     * @param body body
+     * @param pageNum 页数(第几页)
+     * @param pageSize 每页显示的数量(10,20,30,40;目前不限制)
+     * @return 补贴信息
+     */
+    @Post(url = "${url}")
+    SubsidyInfoResponse getSubsidyInfo(@DataVariable("url") String url, @JSONBody RequestBodyNewer body, @Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
 }

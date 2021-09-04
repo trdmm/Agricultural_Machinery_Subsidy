@@ -128,13 +128,7 @@ public class CommonTask {
                     } else {
                         YearInfo yearInfo = new YearInfo();
                         yearInfo.setYear(2021);
-
-                        if (province.contains("江苏")) {
-                            yearInfo.setUrl("http://butiexitong.gagogroup.cn:8081/subsidyOpen");
-                        } else {
-                            yearInfo.setUrl(yearUrl);
-                        }
-
+                        yearInfo.setUrl(yearUrl);
                         map.put(province,yearInfo);
                     }
 

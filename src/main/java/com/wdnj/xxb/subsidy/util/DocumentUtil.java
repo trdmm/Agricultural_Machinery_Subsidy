@@ -27,17 +27,20 @@ import lombok.extern.slf4j.Slf4j;
 public class DocumentUtil {
     /**
      * 结果页转List<br/>
-     * 江西地区有列 "贴息补贴"
+     * 江西地区有列 "贴息补贴"<br/>
+     * 2021年份跟2018年份有区别
      *
      * @param html
      *            需要解析的html页面(String)
      * @param area
      *            地区
+     * @param year
+     *            年份
      * @throws NullPointerException
      *             请求过快返回错误页面,无法解析
      * @return 结果集合
      */
-    public static List<SubsidyInfo> htmlToList(String html, String area) throws NullPointerException {
+    public static List<SubsidyInfo> htmlToList(String html, String area, int year) throws NullPointerException {
         List<SubsidyInfo> list = new ArrayList<>();
         Document document = Jsoup.parse(html);
         Element tableBody = document.getElementById("list-pub");
@@ -46,138 +49,277 @@ public class DocumentUtil {
             // 没有数据,直接返回
             return list;
         }
-        if (area.contains("江西")) {
-            trs.forEach(tr -> {
-                Elements tds = tr.select("td");
-                SubsidyInfo subsidyInfo = new SubsidyInfo();
-                for (int i = 0, length = tds.size(); i < length; i++) {
-                    String attr = tds.get(i).text();
-                    switch (i) {
-                        case 0:
-                            subsidyInfo.setId(attr);
-                            break;
-                        case 1:
-                            subsidyInfo.setCounty(attr);
-                            break;
-                        case 2:
-                            subsidyInfo.setTown(attr);
-                            break;
-                        case 3:
-                            subsidyInfo.setVillage(attr);
-                            break;
-                        case 4:
-                            subsidyInfo.setPurchaserName(attr);
-                            break;
-                        case 5:
-                            subsidyInfo.setMachineItem(attr);
-                            break;
-                        case 6:
-                            subsidyInfo.setFactory(attr);
-                            break;
-                        case 7:
-                            subsidyInfo.setProductName(attr);
-                            break;
-                        case 8:
-                            subsidyInfo.setPurchaseModel(attr);
-                            break;
-                        case 9:
-                            subsidyInfo.setQuantity(attr);
-                            break;
-                        case 10:
-                            subsidyInfo.setDealerName(attr);
-                            break;
-                        case 11:
-                            subsidyInfo.setPurchaseDate(attr);
-                            break;
-                        case 12:
-                            subsidyInfo.setSellPrice(attr);
-                            break;
-                        case 13:
-                            subsidyInfo.setPerSubsidyAmount(attr);
-                            break;
-                        case 14:
-                            subsidyInfo.setDiscountSubsidy(attr);
-                            break;
-                        case 15:
-                            subsidyInfo.setSubsidyAmounts(attr);
-                            break;
-                        case 16:
-                            subsidyInfo.setSerialNumber(attr);
-                            break;
-                        case 17:
-                            subsidyInfo.setState(attr);
-                            break;
-                        default:
-                            break;
+        if (year < 2021){
+            if (area.contains("江西")) {
+                trs.forEach(tr -> {
+                    Elements tds = tr.select("td");
+                    SubsidyInfo subsidyInfo = new SubsidyInfo();
+                    for (int i = 0, length = tds.size(); i < length; i++) {
+                        String attr = tds.get(i).text();
+                        switch (i) {
+                            case 0:
+                                subsidyInfo.setId(attr);
+                                break;
+                            case 1:
+                                subsidyInfo.setCounty(attr);
+                                break;
+                            case 2:
+                                subsidyInfo.setTown(attr);
+                                break;
+                            case 3:
+                                subsidyInfo.setVillage(attr);
+                                break;
+                            case 4:
+                                subsidyInfo.setPurchaserName(attr);
+                                break;
+                            case 5:
+                                subsidyInfo.setMachineItem(attr);
+                                break;
+                            case 6:
+                                subsidyInfo.setFactory(attr);
+                                break;
+                            case 7:
+                                subsidyInfo.setProductName(attr);
+                                break;
+                            case 8:
+                                subsidyInfo.setPurchaseModel(attr);
+                                break;
+                            case 9:
+                                subsidyInfo.setQuantity(attr);
+                                break;
+                            case 10:
+                                subsidyInfo.setDealerName(attr);
+                                break;
+                            case 11:
+                                subsidyInfo.setPurchaseDate(attr);
+                                break;
+                            case 12:
+                                subsidyInfo.setSellPrice(attr);
+                                break;
+                            case 13:
+                                subsidyInfo.setPerCountryAmount(attr);
+                                break;
+                            case 14:
+                                subsidyInfo.setDiscountSubsidy(attr);
+                                break;
+                            case 15:
+                                subsidyInfo.setSubsidyAmounts(attr);
+                                break;
+                            case 16:
+                                subsidyInfo.setSerialNumber(attr);
+                                break;
+                            case 17:
+                                subsidyInfo.setState(attr);
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                }
-                list.add(subsidyInfo);
-            });
+                    subsidyInfo.setFundingYear(year);
+                    list.add(subsidyInfo);
+                });
+            } else {
+                trs.forEach(tr -> {
+                    Elements tds = tr.select("td");
+                    SubsidyInfo subsidyInfo = new SubsidyInfo();
+                    for (int i = 0, length = tds.size(); i < length; i++) {
+                        String attr = tds.get(i).text();
+                        switch (i) {
+                            case 0:
+                                subsidyInfo.setId(attr);
+                                break;
+                            case 1:
+                                subsidyInfo.setCounty(attr);
+                                break;
+                            case 2:
+                                subsidyInfo.setTown(attr);
+                                break;
+                            case 3:
+                                subsidyInfo.setVillage(attr);
+                                break;
+                            case 4:
+                                subsidyInfo.setPurchaserName(attr);
+                                break;
+                            case 5:
+                                subsidyInfo.setMachineItem(attr);
+                                break;
+                            case 6:
+                                subsidyInfo.setFactory(attr);
+                                break;
+                            case 7:
+                                subsidyInfo.setProductName(attr);
+                                break;
+                            case 8:
+                                subsidyInfo.setPurchaseModel(attr);
+                                break;
+                            case 9:
+                                subsidyInfo.setQuantity(attr);
+                                break;
+                            case 10:
+                                subsidyInfo.setDealerName(attr);
+                                break;
+                            case 11:
+                                subsidyInfo.setPurchaseDate(attr);
+                                break;
+                            case 12:
+                                subsidyInfo.setSellPrice(attr);
+                                break;
+                            case 13:
+                                subsidyInfo.setPerCountryAmount(attr);
+                                break;
+                            case 14:
+                                subsidyInfo.setSubsidyAmounts(attr);
+                                break;
+                            case 15:
+                                subsidyInfo.setSerialNumber(attr);
+                                break;
+                            case 16:
+                                subsidyInfo.setState(attr);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    subsidyInfo.setFundingYear(year);
+                    list.add(subsidyInfo);
+                });
+            }
+
         } else {
-            trs.forEach(tr -> {
-                Elements tds = tr.select("td");
-                SubsidyInfo subsidyInfo = new SubsidyInfo();
-                for (int i = 0, length = tds.size(); i < length; i++) {
-                    String attr = tds.get(i).text();
-                    switch (i) {
-                        case 0:
-                            subsidyInfo.setId(attr);
-                            break;
-                        case 1:
-                            subsidyInfo.setCounty(attr);
-                            break;
-                        case 2:
-                            subsidyInfo.setTown(attr);
-                            break;
-                        case 3:
-                            subsidyInfo.setVillage(attr);
-                            break;
-                        case 4:
-                            subsidyInfo.setPurchaserName(attr);
-                            break;
-                        case 5:
-                            subsidyInfo.setMachineItem(attr);
-                            break;
-                        case 6:
-                            subsidyInfo.setFactory(attr);
-                            break;
-                        case 7:
-                            subsidyInfo.setProductName(attr);
-                            break;
-                        case 8:
-                            subsidyInfo.setPurchaseModel(attr);
-                            break;
-                        case 9:
-                            subsidyInfo.setQuantity(attr);
-                            break;
-                        case 10:
-                            subsidyInfo.setDealerName(attr);
-                            break;
-                        case 11:
-                            subsidyInfo.setPurchaseDate(attr);
-                            break;
-                        case 12:
-                            subsidyInfo.setSellPrice(attr);
-                            break;
-                        case 13:
-                            subsidyInfo.setPerSubsidyAmount(attr);
-                            break;
-                        case 14:
-                            subsidyInfo.setSubsidyAmounts(attr);
-                            break;
-                        case 15:
-                            subsidyInfo.setSerialNumber(attr);
-                            break;
-                        case 16:
-                            subsidyInfo.setState(attr);
-                            break;
-                        default:
-                            break;
+            // 2021~2023 年度
+            if (area.contains("江西")) {
+                trs.forEach(tr -> {
+                    Elements tds = tr.select("td");
+                    SubsidyInfo subsidyInfo = new SubsidyInfo();
+                    for (int i = 0, length = tds.size(); i < length; i++) {
+                        String attr = tds.get(i).text();
+                        switch (i) {
+                            case 0:
+                                subsidyInfo.setId(attr);
+                                break;
+                            case 1:
+                                subsidyInfo.setCounty(attr);
+                                break;
+                            case 2:
+                                subsidyInfo.setTown(attr);
+                                break;
+                            case 3:
+                                subsidyInfo.setPurchaserName(attr);
+                                break;
+                            case 4:
+                                subsidyInfo.setMachineItem(attr);
+                                break;
+                            case 5:
+                                subsidyInfo.setFactory(attr);
+                                break;
+                            case 6:
+                                subsidyInfo.setProductName(attr);
+                                break;
+                            case 7:
+                                subsidyInfo.setPurchaseModel(attr);
+                                break;
+                            case 8:
+                                subsidyInfo.setQuantity(attr);
+                                break;
+                            case 9:
+                                subsidyInfo.setDealerName(attr);
+                                break;
+                            case 10:
+                                subsidyInfo.setPurchaseDate(attr);
+                                break;
+                            case 11:
+                                subsidyInfo.setSellPrice(attr);
+                                break;
+                            case 12:
+                                subsidyInfo.setPerCountryAmount(attr);
+                                break;
+                            case 13:
+                                subsidyInfo.setPerProvinceAmount(attr);
+                                break;
+                            case 14:
+                                subsidyInfo.setDiscountSubsidy(attr);
+                                break;
+                            case 15:
+                                subsidyInfo.setSubsidyAmounts(attr);
+                                break;
+                            case 16:
+                                subsidyInfo.setSerialNumber(attr);
+                                break;
+                            case 17:
+                                subsidyInfo.setState(attr);
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                }
-                list.add(subsidyInfo);
-            });
+                    subsidyInfo.setFundingYear(year);
+                    list.add(subsidyInfo);
+                });
+            } else {
+                trs.forEach(tr -> {
+                    Elements tds = tr.select("td");
+                    SubsidyInfo subsidyInfo = new SubsidyInfo();
+                    for (int i = 0, length = tds.size(); i < length; i++) {
+                        String attr = tds.get(i).text();
+                        switch (i) {
+                            case 0:
+                                subsidyInfo.setId(attr);
+                                break;
+                            case 1:
+                                subsidyInfo.setCounty(attr);
+                                break;
+                            case 2:
+                                subsidyInfo.setTown(attr);
+                                break;
+                            case 3:
+                                subsidyInfo.setPurchaserName(attr);
+                                break;
+                            case 4:
+                                subsidyInfo.setMachineItem(attr);
+                                break;
+                            case 5:
+                                subsidyInfo.setFactory(attr);
+                                break;
+                            case 6:
+                                subsidyInfo.setProductName(attr);
+                                break;
+                            case 7:
+                                subsidyInfo.setPurchaseModel(attr);
+                                break;
+                            case 8:
+                                subsidyInfo.setQuantity(attr);
+                                break;
+                            case 9:
+                                subsidyInfo.setDealerName(attr);
+                                break;
+                            case 10:
+                                subsidyInfo.setPurchaseDate(attr);
+                                break;
+                            case 11:
+                                subsidyInfo.setSellPrice(attr);
+                                break;
+                            case 12:
+                                subsidyInfo.setPerCountryAmount(attr);
+                                break;
+                            case 13:
+                                subsidyInfo.setSubsidyAmounts(attr);
+                                break;
+                            case 14:
+                                subsidyInfo.setSerialNumber(attr);
+                                break;
+                            case 15:
+                                subsidyInfo.setState(attr);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    subsidyInfo.setFundingYear(year);
+                    list.add(subsidyInfo);
+                });
+            }
         }
+
         return list;
     }
 
@@ -238,13 +380,16 @@ public class DocumentUtil {
      * @return 页数和有效cookie
      */
     public static int extractPages(String html) {
-        Document document = Jsoup.parse(html);
+        try {
+            Document document = Jsoup.parse(html);
+            // 页数
+            Element lastPage = document.getElementsByClass("pagerItem").get(0).select("a").last();
+            String target = lastPage.attr("href");
 
-        // 页数
-        Element lastPage = document.getElementsByClass("pagerItem").get(0).select("a").last();
-        String target = lastPage.attr("href");
-
-        return NumberUtil.parseInt(target.split("=")[1]);
+            return NumberUtil.parseInt(target.split("=")[1]);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     /**

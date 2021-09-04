@@ -19,6 +19,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <!--排除自带的logback依赖-->
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
 
@@ -28,12 +35,14 @@
             <artifactId>easyexcel</artifactId>
             <version>2.2.7</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.dtflys.forest/spring-boot-starter-forest -->
         <dependency>
             <groupId>com.dtflys.forest</groupId>
+<!--            <artifactId>forest-spring-boot-starter</artifactId>-->
+<!--            <version>1.5.2-BETA3</version>-->
             <artifactId>spring-boot-starter-forest</artifactId>
             <version>1.5.0-RC5</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -58,7 +67,7 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.7.8</version>
+            <version>5.7.11</version>
         </dependency>
 
         <dependency>
@@ -67,6 +76,29 @@
             <version>30.1.1-jre</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.4.4</version>
+        </dependency>
+        <!--slf4j 注解-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.14.1</version>
+        </dependency>
+
+        <!--log4j2-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.14.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.14.1</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

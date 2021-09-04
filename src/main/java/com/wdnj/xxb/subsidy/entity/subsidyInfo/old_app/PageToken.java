@@ -1,4 +1,4 @@
-package com.wdnj.xxb.subsidy.entity.subsidyInfo;
+package com.wdnj.xxb.subsidy.entity.subsidyInfo.old_app;
 
 import lombok.Builder;
 import lombok.Data;
