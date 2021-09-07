@@ -39,7 +39,7 @@
             <Filters>
                 <!--warning及以上的拒绝,以下的交给下一级处理-->
 <!--                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL"/>-->
-                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
         </console>
 
@@ -97,7 +97,7 @@
     <!--Logger节点用来单独指定日志的形式，比如要为指定包下的class指定不同的日志级别等。-->
     <!--然后定义loggers，只有定义了logger并引入的appender，appender才会生效-->
     <loggers>
-        <AsyncLogger name="com.wdnj.xxb" level="info" includeLocation="false" additivity="false">
+        <AsyncLogger name="com.wdnj.xxb" level="debug" includeLocation="false" additivity="false">
             <appender-ref ref="Console"/>
             <AppenderRef ref="InfoFile"/>
             <AppenderRef ref="ErrorFile"/>

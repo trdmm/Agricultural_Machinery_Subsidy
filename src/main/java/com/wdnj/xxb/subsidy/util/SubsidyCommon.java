@@ -102,6 +102,7 @@ public class SubsidyCommon {
 
         Text text = new Text(region + " over(沃得)");
         httpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(text).build());
+        log.info("{} 全部完成",region);
     }
 
     /**
@@ -242,6 +243,7 @@ public class SubsidyCommon {
         CopyOptions copyOptions = CopyOptions.create();
         copyOptions.setFieldMapping(FIELD_MAP);
 
+        log.info("{} {} 年总共{}页", region, year, pages);
         for (int i = 1; i <= pages; i++) {
             log.debug("开始爬取新版本 {} {} 年,第 {}/{} 页...", region, year, i, pages);
             SubsidyInfoResponse response = httpClient.getSubsidyInfo(url, body, i, MAX_PAGE_SIZE);
