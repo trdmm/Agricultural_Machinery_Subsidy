@@ -43,7 +43,10 @@ public class SubsidyCommon {
         add("四川省");
     }};
 
-    /** BeanUtil 赋值属性Map */
+    /**
+     * BeanUtil 赋值属性Map<br/>
+     * 注: 只涉及新系统省份的数据对象转换.
+     */
     private static final Map<String, String> FIELD_MAP = new HashMap<String,String>(){{
         put("id","id");
         put("years","fundingYear");
@@ -79,9 +82,13 @@ public class SubsidyCommon {
     public static void getSubsidy(String region, SubsidyHttpClient httpClient, Collection<YearInfo> yearInfos, File dir) {
         for (YearInfo yearInfo : yearInfos) {
             int year = yearInfo.getYear();
-
             // 公示地址
             String publicUrl = yearInfo.getUrl();
+
+            // 如果是像2021年那样,地址为空的,跳过执行下一年
+            if (StrUtil.isBlank(publicUrl)) {
+                continue;
+            }
 
             if (StrUtil.endWith(publicUrl,"gongshi")) {
                 // 旧版应用

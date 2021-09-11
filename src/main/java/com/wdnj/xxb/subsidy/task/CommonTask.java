@@ -111,10 +111,6 @@ public class CommonTask {
                     String province = provinceYearInfo1.getProvince();
                     String yearUrl = urlMap.get(province);
 
-                    if (StrUtil.isBlank(yearUrl)) {
-                        return;
-                    }
-
                     if (finalJ == 1){
                         // 2018-2020 年
                         int[] years = ArrayUtil.reverse(provinceYearInfo1.getYears());
