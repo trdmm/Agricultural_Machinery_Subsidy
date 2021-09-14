@@ -3,26 +3,27 @@ package com.wdnj.xxb.subsidy.util;
 import java.io.File;
 import java.util.*;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.dtflys.forest.exceptions.ForestNetworkException;
+import com.dtflys.forest.exceptions.ForestRuntimeException;
 import com.dtflys.forest.http.ForestCookie;
 import com.dtflys.forest.http.HttpStatus;
 import com.wdnj.xxb.subsidy.entity.ding_talk.DingTalkMsg;
 import com.wdnj.xxb.subsidy.entity.ding_talk.Text;
 import com.wdnj.xxb.subsidy.entity.factoryFhInfo.FhInfo;
+import com.wdnj.xxb.subsidy.entity.subsidyInfo.SubsidyInfo;
+import com.wdnj.xxb.subsidy.entity.subsidyInfo.YearInfo;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.new_app.RequestBodyNewer;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.new_app.SubsidyInfoResponse;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.old_app.RequestBodyOlder;
-import com.wdnj.xxb.subsidy.entity.subsidyInfo.SubsidyInfo;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
-import com.wdnj.xxb.subsidy.entity.subsidyInfo.YearInfo;
+import cn.hutool.core.util.NumberUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -194,11 +195,17 @@ public class SubsidyCommon {
                     ThreadUtil.safeSleep(5000);
                 }
             } catch (ForestNetworkException e) {
-                log.error("{} {} 年,第 {} 页 网络 错误,休眠60s", region, year, i);
+                log.warn("{} {} 年,第 {} 页 网络 错误,休眠60s", region, year, i);
                 i--;
                 ThreadUtil.safeSleep(60 * 1000);
+            } catch (ForestRuntimeException e){
+                log.warn("{} {} 年,第 {} 页出现 ForestRuntimeException 异常错误,休眠10min", region, year, i);
+                log.error("{} {} {} ForestRuntimeException 异常错误",region,year,i,e);
+                i--;
+                ThreadUtil.safeSleep(10 * 60 * 1000);
             } catch (Exception e) {
-                log.error("{} {} 年,第 {} 页出错,休眠3min", region, year, i);
+                log.warn("{} {} 年,第 {} 页出现比 ForestRuntimeException 更严重的异常错误,休眠3min", region, year, i);
+                log.error("{} {} {} 比 ForestRuntimeException 更严重的异常错误",region,year,i,e);
                 i--;
                 ThreadUtil.safeSleep(3 * 60 * 1000);
             }
@@ -252,31 +259,47 @@ public class SubsidyCommon {
 
         log.info("{} {} 年总共{}页", region, year, pages);
         for (int i = 1; i <= pages; i++) {
-            log.debug("开始爬取新版本 {} {} 年,第 {}/{} 页...", region, year, i, pages);
-            SubsidyInfoResponse response = httpClient.getSubsidyInfo(url, body, i, MAX_PAGE_SIZE);
+            try {
+                log.debug("开始爬取新版本 {} {} 年,第 {}/{} 页...", region, year, i, pages);
+                SubsidyInfoResponse response = httpClient.getSubsidyInfo(url, body, i, MAX_PAGE_SIZE);
 
-            if (response.getCode() != HttpStatus.OK) {
-                // 失败
-                log.error("新版本 {} {} 年,第 {} 页出错,休眠3min", region, year, i);
+                if (response.getCode() != HttpStatus.OK) {
+                    // 失败
+                    log.warn("新版本 {} {} 年,第 {} 页出错,休眠3min", region, year, i);
+                    i--;
+                    ThreadUtil.safeSleep(3 * 60 * 1000);
+                    continue;
+                }
+
+                response.getRows().forEach(rowsItem -> {
+                    SubsidyInfo subsidyInfo = BeanUtil.toBean(rowsItem, SubsidyInfo.class, copyOptions);
+                    list.add(subsidyInfo);
+                });
+
+                if (i % 30 == 0) {
+                    EasyExcel.write(FileUtil.getCanonicalPath(mkdir) + "/补贴车辆-" + i + ".xlsx", SubsidyInfo.class)
+                        .sheet().doWrite(list);
+                    list.clear();
+                    ThreadUtil.safeSleep(8 * 1000);
+                } else if (StrUtil.containsAny(region,"山西","天津")) {
+                    ThreadUtil.safeSleep(10 * 1000);
+                } else {
+                    ThreadUtil.safeSleep(5000);
+                }
+            } catch (ForestNetworkException e) {
+                log.warn("{} {} 年,第 {} 页 网络 错误,休眠60s", region, year, i);
+                i--;
+                ThreadUtil.safeSleep(60 * 1000);
+            } catch (ForestRuntimeException e){
+                log.warn("{} {} 年,第 {} 页出现 ForestRuntimeException 异常错误,休眠10min", region, year, i);
+                log.error("{} {} {} ForestRuntimeException 异常错误",region,year,i,e);
+                i--;
+                ThreadUtil.safeSleep(10 * 60 * 1000);
+            } catch (Exception e) {
+                log.warn("{} {} 年,第 {} 页出现比 ForestRuntimeException 更严重的异常错误,休眠3min", region, year, i);
+                log.error("{} {} {} 比 ForestRuntimeException 更严重的异常错误",region,year,i,e);
                 i--;
                 ThreadUtil.safeSleep(3 * 60 * 1000);
-                continue;
-            }
-
-            response.getRows().forEach(rowsItem -> {
-                SubsidyInfo subsidyInfo = BeanUtil.toBean(rowsItem, SubsidyInfo.class, copyOptions);
-                list.add(subsidyInfo);
-            });
-
-            if (i % 30 == 0) {
-                EasyExcel.write(FileUtil.getCanonicalPath(mkdir) + "/补贴车辆-" + i + ".xlsx", SubsidyInfo.class)
-                    .sheet().doWrite(list);
-                list.clear();
-                ThreadUtil.safeSleep(8 * 1000);
-            } else if (StrUtil.containsAny(region,"山西","天津")) {
-                ThreadUtil.safeSleep(10 * 1000);
-            } else {
-                ThreadUtil.safeSleep(5000);
             }
         }
 
@@ -306,7 +329,7 @@ public class SubsidyCommon {
         try {
             result = subsidyHttpClient.queryFhInfo(url, 1, requestBody);
         } catch (Exception e) {
-            log.error("{} 企业发货: {},出错!",area,url,e);
+            log.warn("{} 企业发货: {},出错!",area,url,e);
             Text text = new Text(area + " 企业发货出错(沃得): "+url);
             subsidyHttpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(text).build());
             return;
@@ -328,7 +351,7 @@ public class SubsidyCommon {
                 }
                 //ThreadUtil.safeSleep(1000);
             } catch (Exception e) {
-                log.error("{} 第 {} 页出错,休眠3min", area, i);
+                log.warn("{} 第 {} 页出错,休眠3min", area, i);
                 i--;
                 ThreadUtil.safeSleep(3 * 60 * 1000);
             }

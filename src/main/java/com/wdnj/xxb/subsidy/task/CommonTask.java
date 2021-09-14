@@ -7,14 +7,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.annotation.Resource;
 
-import com.wdnj.xxb.subsidy.entity.ding_talk.DingTalkMsg;
-import com.wdnj.xxb.subsidy.entity.ding_talk.Text;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.wdnj.xxb.subsidy.entity.ding_talk.DingTalkMsg;
+import com.wdnj.xxb.subsidy.entity.ding_talk.Text;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.ProvinceInfo;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.ProvinceYearInfo;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.YearInfo;
@@ -28,7 +28,6 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ExecutorBuilder;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -129,7 +128,7 @@ public class CommonTask {
                     }
 
                 });
-            }catch (Exception e){
+            } catch (Exception e){
                 log.error("补贴数据获取最新公示地址错误",e);
                 Text text = new Text("补贴数据获取最新公示地址错误(沃得): " + DateUtil.now());
                 subsidyHttpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(text).build());
