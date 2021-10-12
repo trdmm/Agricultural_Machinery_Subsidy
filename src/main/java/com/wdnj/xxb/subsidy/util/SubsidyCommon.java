@@ -71,7 +71,7 @@ public class SubsidyCommon {
         put("status","state");
     }};
 
-    private static final int MAX_PAGE_SIZE = 100;
+    private static final int MAX_PAGE_SIZE = 30;
     /**
      * 查询补贴数据
      *
@@ -85,9 +85,12 @@ public class SubsidyCommon {
             int year = yearInfo.getYear();
             // 公示地址
             String publicUrl = yearInfo.getUrl();
-
+            if (year==2021 && StrUtil.isBlank(publicUrl) && StrUtil.contains(region,"黑龙江")){
+                publicUrl = "http://218.7.20.115:2021/pub/gongshi";
+            }
             // 如果是像2021年那样,地址为空的,跳过执行下一年
             if (StrUtil.isBlank(publicUrl)) {
+                log.info("{} {} 年系统地址为空",region,year);
                 continue;
             }
 
@@ -105,7 +108,8 @@ public class SubsidyCommon {
             }
 
             // 一年结束 停 5min
-            ThreadUtil.safeSleep(5 * 60 * 1000);
+            log.info("{} {} 年完成",region,year);
+            ThreadUtil.safeSleep(3 * 60 * 1000);
         }
 
         Text text = new Text(region + " over(沃得)");
@@ -127,9 +131,24 @@ public class SubsidyCommon {
 
         /* 存放cookie */
         List<ForestCookie> cookies = new ArrayList<>();
-        /* 打开公示页 */
-        String publishPage = httpClient.openPublishPage(publicUrl,
-            (forestRequest, forestCookies) -> cookies.addAll(forestCookies.allCookies()));
+        String publishPage;
+        try {
+            /* 打开公示页 */
+            publishPage = httpClient.openPublishPage(publicUrl,
+                (forestRequest, forestCookies) -> cookies.addAll(forestCookies.allCookies()));
+        } catch (ForestNetworkException e) {
+            Integer statusCode = e.getStatusCode();
+            if (statusCode == HttpStatus.NOT_FOUND) {
+                log.error("{} {} 打开公示页发生 404: ",region,year,e);
+            } else {
+                log.error("{} {} 打开公示页发生异常,响应码: {}",region,year,statusCode,e);
+            }
+            return;
+        } catch (Exception e) {
+            log.error("{} {} 打开公示页发生错误: ",region,year,e);
+            return;
+        }
+        int pages = DocumentUtil.extractPages(publishPage);
         /* 获取公示页面中的token */
         String token = DocumentUtil.extractBodyCookie(publishPage);
         if (token == null){
@@ -159,12 +178,18 @@ public class SubsidyCommon {
             .build();
 
         ThreadUtil.sleep(3000);
+        // TODO(2021-10-12 黑龙江,内蒙古2021年查询故障)
         /* 点击公示页查询结果 */
-        String clickQueryResult = httpClient.clickQuery(listUrl, body,
-            (forestRequest, forestCookies) -> forestCookies.addAllCookies(cookies));
+        // String clickQueryResult = httpClient.clickQuery(listUrl, body,
+        //     (forestRequest, forestCookies) -> forestCookies.addAllCookies(cookies));
         /* 提取总页数 */
-        int pages = DocumentUtil.extractPages(clickQueryResult);
+        // int pages = DocumentUtil.extractPages(clickQueryResult);
 
+        // TODO(2021-10-12 黑龙江,内蒙古2021年查询故障)
+        boolean searchError = false;
+        if (StrUtil.containsAny(region,"黑龙江","内蒙古") && year == 2021){
+            searchError = true;
+        }
         if (pages == 0) {
             // 提取总页数出错
             Text text = new Text(region + "-" + year + "年提取总页数出错(沃得)");
@@ -177,7 +202,7 @@ public class SubsidyCommon {
             try {
                 log.debug("开始爬取 {} {} 年,第 {}/{} 页...", region, year, i, pages);
                 /* 正式开始查询 */
-                String result = httpClient.queryList(listUrl, i, body,
+                String result = httpClient.queryList(searchError?publicUrl:listUrl, i, body,
                     (forestRequest, forestCookies) -> forestCookies.addAllCookies(cookies));
                 /* 解析html中的补贴数据 */
 
