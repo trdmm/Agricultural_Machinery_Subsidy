@@ -71,7 +71,7 @@ public class SubsidyCommon {
         put("status","state");
     }};
 
-    private static final int MAX_PAGE_SIZE = 30;
+    private static final int MAX_PAGE_SIZE = 10;
     /**
      * 查询补贴数据
      *
@@ -182,14 +182,14 @@ public class SubsidyCommon {
         /* 点击公示页查询结果 */
         // String clickQueryResult = httpClient.clickQuery(listUrl, body,
         //     (forestRequest, forestCookies) -> forestCookies.addAllCookies(cookies));
-        /* 提取总页数 */
+        /* 提取总页数(公示页提取总页数) */
         // int pages = DocumentUtil.extractPages(clickQueryResult);
 
         // TODO(2021-10-12 黑龙江,内蒙古2021年查询故障)
         boolean searchError = false;
-        if (StrUtil.containsAny(region,"黑龙江","内蒙古") && year == 2021){
-            searchError = true;
-        }
+        // if (StrUtil.containsAny(region,"黑龙江","内蒙古") && year == 2021){
+        //     searchError = true;
+        // }
         if (pages == 0) {
             // 提取总页数出错
             Text text = new Text(region + "-" + year + "年提取总页数出错(沃得)");
@@ -220,7 +220,7 @@ public class SubsidyCommon {
                     ThreadUtil.safeSleep(5000);
                 }
             } catch (ForestNetworkException e) {
-                log.warn("{} {} 年,第 {} 页 网络 错误,休眠60s", region, year, i);
+                log.warn("{} {} 年,第 {} 页 ForestNetworkException 错误,休眠60s", region, year, i);
                 i--;
                 ThreadUtil.safeSleep(60 * 1000);
             } catch (ForestRuntimeException e){
@@ -229,8 +229,8 @@ public class SubsidyCommon {
                 i--;
                 ThreadUtil.safeSleep(10 * 60 * 1000);
             } catch (Exception e) {
-                log.warn("{} {} 年,第 {} 页出现比 ForestRuntimeException 更严重的异常错误,休眠3min", region, year, i);
-                log.error("{} {} {} 比 ForestRuntimeException 更严重的异常错误",region,year,i,e);
+                log.warn("{} {} 年,第 {} 页出现 Exception 异常错误,休眠3min", region, year, i);
+                log.error("{} {} {} Exception 异常错误",region,year,i,e);
                 i--;
                 ThreadUtil.safeSleep(3 * 60 * 1000);
             }
@@ -262,9 +262,17 @@ public class SubsidyCommon {
 
         RequestBodyNewer body = new RequestBodyNewer(year);
 
-        SubsidyInfoResponse subsidyInfoTest = httpClient.getSubsidyInfo(url, body, 1, MAX_PAGE_SIZE);
+        SubsidyInfoResponse subsidyInfoTest = null;
+        try {
+            subsidyInfoTest = httpClient.getSubsidyInfo(url, body, 1, MAX_PAGE_SIZE);
+        } catch (Exception e) {
+            log.error("{} {} 年查询页数出错.",region,year,e);
+            Text text = new Text(region + "-" + year + " 新版补贴页码查询失败(沃得)");
+            httpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(text).build());
+            return;
+        }
         int pages;
-        if (subsidyInfoTest.getCode() == HttpStatus.OK) {
+        if (subsidyInfoTest.getCode() == HttpStatus.OK && CollectionUtil.isNotEmpty(subsidyInfoTest.getRows())) {
             // 请求成功
             int total = subsidyInfoTest.getTotal();
             pages = NumberUtil.ceilDiv(total, MAX_PAGE_SIZE);
