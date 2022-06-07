@@ -258,7 +258,7 @@ public class SubsidyCommon {
         // ->
         // http://butiexitong.gagogroup.cn:8081/api/api/loginSidePage/getPurchaseSubsidyOpenList
 
-        String url = StrUtil.replace(publicUrl, "subsidyOpen", "api/api/loginSidePage/getPurchaseSubsidyOpenList");
+        String url = StrUtil.replace(publicUrl, "subsidyOpen", "api/api/loginSidePage/getPurchaseOfAgriculturalMachinery");
 
         RequestBodyNewer body = new RequestBodyNewer(year);
 
