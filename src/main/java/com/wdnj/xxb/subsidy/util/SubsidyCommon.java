@@ -3,6 +3,7 @@ package com.wdnj.xxb.subsidy.util;
 import java.io.File;
 import java.util.*;
 
+import cn.hutool.core.text.StrBuilder;
 import com.alibaba.excel.EasyExcel;
 import com.dtflys.forest.exceptions.ForestNetworkException;
 import com.dtflys.forest.exceptions.ForestRuntimeException;
@@ -231,6 +232,13 @@ public class SubsidyCommon {
             } catch (Exception e) {
                 log.warn("{} {} 年,第 {} 页出现 Exception 异常错误,休眠3min", region, year, i);
                 log.error("{} {} {} Exception 异常错误",region,year,i,e);
+                StrBuilder strBuilder = StrBuilder.create();
+                strBuilder
+                        .append(region).append(" ")
+                        .append(year).append(" 年,第 ")
+                        .append(i).append(" 页出现 Exception.")
+                        .append(e);
+                httpClient.sendDingTalkMsg(DingTalkMsg.builder().msgType("text").text(new Text(strBuilder.toString())).build());
                 i--;
                 ThreadUtil.safeSleep(3 * 60 * 1000);
             }

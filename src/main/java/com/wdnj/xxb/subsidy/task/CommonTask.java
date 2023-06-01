@@ -121,12 +121,13 @@ public class CommonTask {
                             map.put(province, yearInfo);
                         }
                     } else {
-                        YearInfo yearInfo = new YearInfo();
-                        yearInfo.setYear(2021);
-                        yearInfo.setUrl(yearUrl);
-                        map.put(province,yearInfo);
+                        for (int i = 2023; i > 2020; i--) {
+                            YearInfo yearInfo = new YearInfo();
+                            yearInfo.setYear(i);
+                            yearInfo.setUrl(yearUrl);
+                            map.put(province,yearInfo);
+                        }
                     }
-
                 });
             } catch (Exception e){
                 log.error("补贴数据获取最新公示地址错误",e);
