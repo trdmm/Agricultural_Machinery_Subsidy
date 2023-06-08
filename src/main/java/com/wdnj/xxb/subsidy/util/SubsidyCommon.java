@@ -149,7 +149,8 @@ public class SubsidyCommon {
             log.error("{} {} 打开公示页发生错误: ",region,year,e);
             return;
         }
-        int pages = DocumentUtil.extractPages(publishPage);
+
+
         /* 获取公示页面中的token */
         String token = DocumentUtil.extractBodyCookie(publishPage);
         if (token == null){
@@ -181,10 +182,10 @@ public class SubsidyCommon {
         ThreadUtil.sleep(3000);
         // TODO(2021-10-12 黑龙江,内蒙古2021年查询故障)
         /* 点击公示页查询结果 */
-        // String clickQueryResult = httpClient.clickQuery(listUrl, body,
-        //     (forestRequest, forestCookies) -> forestCookies.addAllCookies(cookies));
+        String clickQueryResult = httpClient.clickQuery(listUrl, body,
+            (forestRequest, forestCookies) -> forestCookies.addAllCookies(cookies));
         /* 提取总页数(公示页提取总页数) */
-        // int pages = DocumentUtil.extractPages(clickQueryResult);
+        int pages = DocumentUtil.extractPages(clickQueryResult);
 
         // TODO(2021-10-12 黑龙江,内蒙古2021年查询故障)
         boolean searchError = false;
