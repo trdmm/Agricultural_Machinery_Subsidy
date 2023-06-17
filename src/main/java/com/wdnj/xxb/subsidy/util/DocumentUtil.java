@@ -1,18 +1,16 @@
 package com.wdnj.xxb.subsidy.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import cn.hutool.core.util.NumberUtil;
 import com.wdnj.xxb.subsidy.entity.factoryFhInfo.FhInfo;
+import com.wdnj.xxb.subsidy.entity.subsidyInfo.SubsidyInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.wdnj.xxb.subsidy.entity.subsidyInfo.SubsidyInfo;
-
-import cn.hutool.core.util.NumberUtil;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 描述: 正式查询列表<br>
@@ -27,18 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 public class DocumentUtil {
     /**
      * 结果页转List<br/>
-     * 江西地区有列 "贴息补贴"<br/>
+     * 江西地区 2020 年度有列 "贴息补贴"<br/>
+     * 2021 年度参考 README.md<br/>
      * 2021年份跟2018年份有区别
      *
-     * @param html
-     *            需要解析的html页面(String)
-     * @param area
-     *            地区
-     * @param year
-     *            年份
-     * @throws NullPointerException
-     *             请求过快返回错误页面,无法解析
+     * @param html 需要解析的html页面(String)
+     * @param area 地区
+     * @param year 年份
      * @return 结果集合
+     * @throws NullPointerException 请求过快返回错误页面,无法解析
      */
     public static List<SubsidyInfo> htmlToList(String html, String area, int year) throws NullPointerException {
         List<SubsidyInfo> list = new ArrayList<>();
@@ -49,7 +44,7 @@ public class DocumentUtil {
             // 没有数据,直接返回
             return list;
         }
-        if (year < 2021){
+        if (year < 2021) {
             if (area.contains("江西")) {
                 trs.forEach(tr -> {
                     Elements tds = tr.select("td");
@@ -187,137 +182,79 @@ public class DocumentUtil {
 
         } else {
             // 2021~2023 年度
-            if (area.contains("江西")) {
-                trs.forEach(tr -> {
-                    Elements tds = tr.select("td");
-                    SubsidyInfo subsidyInfo = new SubsidyInfo();
-                    for (int i = 0, length = tds.size(); i < length; i++) {
-                        String attr = tds.get(i).text();
-                        switch (i) {
-                            case 0:
-                                subsidyInfo.setId(attr);
-                                break;
-                            case 1:
-                                subsidyInfo.setCounty(attr);
-                                break;
-                            case 2:
-                                subsidyInfo.setTown(attr);
-                                break;
-                            case 3:
-                                subsidyInfo.setPurchaserName(attr);
-                                break;
-                            case 4:
-                                subsidyInfo.setMachineItem(attr);
-                                break;
-                            case 5:
-                                subsidyInfo.setFactory(attr);
-                                break;
-                            case 6:
-                                subsidyInfo.setProductName(attr);
-                                break;
-                            case 7:
-                                subsidyInfo.setPurchaseModel(attr);
-                                break;
-                            case 8:
-                                subsidyInfo.setQuantity(attr);
-                                break;
-                            case 9:
-                                subsidyInfo.setDealerName(attr);
-                                break;
-                            case 10:
-                                subsidyInfo.setPurchaseDate(attr);
-                                break;
-                            case 11:
-                                subsidyInfo.setSellPrice(attr);
-                                break;
-                            case 12:
-                                subsidyInfo.setPerCountryAmount(attr);
-                                break;
-                            case 13:
-                                subsidyInfo.setPerProvinceAmount(attr);
-                                break;
-                            case 14:
-                                subsidyInfo.setDiscountSubsidy(attr);
-                                break;
-                            case 15:
-                                subsidyInfo.setSubsidyAmounts(attr);
-                                break;
-                            case 16:
-                                subsidyInfo.setSerialNumber(attr);
-                                break;
-                            case 17:
-                                subsidyInfo.setState(attr);
-                                break;
-                            default:
-                                break;
-                        }
+            trs.forEach(tr -> {
+                Elements tds = tr.select("td");
+                SubsidyInfo subsidyInfo = new SubsidyInfo();
+                int length = tds.size();
+                for (int i = 0; i < 13; i++) {
+                    String attr = tds.get(i).text();
+                    switch (i) {
+                        case 0:
+                            subsidyInfo.setId(attr);
+                            break;
+                        case 1:
+                            subsidyInfo.setCounty(attr);
+                            break;
+                        case 2:
+                            subsidyInfo.setTown(attr);
+                            break;
+                        case 3:
+                            subsidyInfo.setPurchaserName(attr);
+                            break;
+                        case 4:
+                            subsidyInfo.setMachineItem(attr);
+                            break;
+                        case 5:
+                            subsidyInfo.setFactory(attr);
+                            break;
+                        case 6:
+                            subsidyInfo.setProductName(attr);
+                            break;
+                        case 7:
+                            subsidyInfo.setPurchaseModel(attr);
+                            break;
+                        case 8:
+                            subsidyInfo.setQuantity(attr);
+                            break;
+                        case 9:
+                            subsidyInfo.setDealerName(attr);
+                            break;
+                        case 10:
+                            subsidyInfo.setPurchaseDate(attr);
+                            break;
+                        case 11:
+                            subsidyInfo.setSellPrice(attr);
+                            break;
+                        case 12:
+                            subsidyInfo.setPerCountryAmount(attr);
+                            break;
+                            // 之后的由于各省数据列不一致,直接取最后三个
+                        default:
+                            break;
                     }
-                    subsidyInfo.setFundingYear(year);
-                    list.add(subsidyInfo);
-                });
-            } else {
-                trs.forEach(tr -> {
-                    Elements tds = tr.select("td");
-                    SubsidyInfo subsidyInfo = new SubsidyInfo();
-                    for (int i = 0, length = tds.size(); i < length; i++) {
-                        String attr = tds.get(i).text();
-                        switch (i) {
-                            case 0:
-                                subsidyInfo.setId(attr);
-                                break;
-                            case 1:
-                                subsidyInfo.setCounty(attr);
-                                break;
-                            case 2:
-                                subsidyInfo.setTown(attr);
-                                break;
-                            case 3:
-                                subsidyInfo.setPurchaserName(attr);
-                                break;
-                            case 4:
-                                subsidyInfo.setMachineItem(attr);
-                                break;
-                            case 5:
-                                subsidyInfo.setFactory(attr);
-                                break;
-                            case 6:
-                                subsidyInfo.setProductName(attr);
-                                break;
-                            case 7:
-                                subsidyInfo.setPurchaseModel(attr);
-                                break;
-                            case 8:
-                                subsidyInfo.setQuantity(attr);
-                                break;
-                            case 9:
-                                subsidyInfo.setDealerName(attr);
-                                break;
-                            case 10:
-                                subsidyInfo.setPurchaseDate(attr);
-                                break;
-                            case 11:
-                                subsidyInfo.setSellPrice(attr);
-                                break;
-                            case 12:
-                                subsidyInfo.setPerCountryAmount(attr);
-                                break;
-                            case 13:
-                                subsidyInfo.setSubsidyAmounts(attr);
-                                break;
-                            case 14:
-                                subsidyInfo.setSerialNumber(attr);
-                                break;
-                            case 15:
-                                subsidyInfo.setState(attr);
-                                break;
-                            default:
-                                break;
-                        }
+                }
+
+                for (int i = 1; i <= 3; i++) {
+                    String attr = tds.get(length-i).text();
+                    switch (i){
+                        // 取后几个
+                        case 3:
+                            subsidyInfo.setSubsidyAmounts(attr);
+                            break;
+                        case 2:
+                            subsidyInfo.setSerialNumber(attr);
+                            break;
+                        case 1:
+                            subsidyInfo.setState(attr);
+                            break;
+                        default:
+                            break;
                     }
-                    subsidyInfo.setFundingYear(year);
-                    list.add(subsidyInfo);
-                });
-            }
+                }
+                subsidyInfo.setFundingYear(year);
+                list.add(subsidyInfo);
+            });
+
         }
 
         return list;
@@ -325,9 +262,8 @@ public class DocumentUtil {
 
     /**
      * 提取页面的cookie -- ASP.SessionId
-     * 
-     * @param html
-     *            存放cookie的页面
+     *
+     * @param html 存放cookie的页面
      * @return 有效cookie
      */
     public static String extractAspCookie(String html) {
@@ -340,8 +276,7 @@ public class DocumentUtil {
     /**
      * 提取公示页的token -- body内容
      *
-     * @param html
-     *            存放token的页面
+     * @param html 存放token的页面
      * @return 页数和有效cookie
      */
     public static String extractBodyCookie(String html) {
@@ -353,7 +288,7 @@ public class DocumentUtil {
         }
         Element form = ser.get(0).select("form").get(0);
         Elements tokenValue = form.getElementsByAttributeValue("name", "__RequestVerificationToken");
-        if (tokenValue.size() == 0){
+        if (tokenValue.size() == 0) {
             // 没找到token,发送消息查看逻辑是否已修改
             return "";
         }
@@ -375,8 +310,7 @@ public class DocumentUtil {
     /**
      * 提取页数 -- body内容
      *
-     * @param html
-     *            存放页码的页面
+     * @param html 存放页码的页面
      * @return 页数和有效cookie
      */
     public static int extractPages(String html) {
@@ -394,6 +328,7 @@ public class DocumentUtil {
 
     /**
      * 获取企业发货信息 页数
+     *
      * @param result HTML页面
      * @return 当前pageSize的页数
      */
@@ -415,9 +350,9 @@ public class DocumentUtil {
         trs.forEach(element -> {
             Elements tds = element.select("td");
             FhInfo fhInfo = new FhInfo();
-            for (int i = 0,length=tds.size(); i < length; i++) {
+            for (int i = 0, length = tds.size(); i < length; i++) {
                 String attr = tds.get(i).text();
-                switch (i){
+                switch (i) {
                     case 0:
                         fhInfo.setFactoryName(attr);
                         break;
