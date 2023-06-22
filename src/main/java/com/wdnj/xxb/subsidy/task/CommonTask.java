@@ -4,9 +4,11 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import cn.hutool.core.util.StrUtil;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -68,6 +70,12 @@ public class CommonTask {
         // 2018-2020 各年份信息
         String provinceYearInfo = FileUtil.readUtf8String(rootDirPath + "/conf/ProvinceYearInfo.json");
 
+        String backupUrlStr = FileUtil.readUtf8String(rootDirPath + "/conf/BackupUrl-2021.json");
+        JSONArray backupUrlArray = JSONUtil.parseArray(backupUrlStr);
+        // 各省级行政区划对应的地址List
+        List<ProvinceInfo> backupUrlInfos = JSONUtil.toList(backupUrlArray, ProvinceInfo.class);
+        Map<String, String> backupUrlMap = backupUrlInfos.stream().collect(Collectors.toMap(ProvinceInfo::getProvince, ProvinceInfo::getUrl));
+
         // 整合各省各年的信息
         for (int j = 0; j < urls.size(); j++) {
             String url = urls.get(j);
@@ -99,7 +107,23 @@ public class CommonTask {
 
                 // 同一年的不同地区 url 的 map
                 Map<String,String> urlMap = new HashMap<String,String>();
-                provinceInfos.forEach(provinceInfo -> urlMap.put(provinceInfo.getProvince(),provinceInfo.getUrl()));
+                int finalJ1 = j;
+                provinceInfos.forEach(provinceInfo -> {
+                    String province = provinceInfo.getProvince();
+                    String url1 = provinceInfo.getUrl();
+
+                    if (StrUtil.isBlank(url1)){
+                        url1 = backupUrlMap.get(province);
+                        String s = finalJ1 == 0 ? "2021~2023" : "2018~2020";
+                        Text text = new Text(province+"地区没有["+ s +"]年度网站Url,使用备用Url.");
+                        subsidyHttpClient.sendDingTalkMsg(
+                            DingTalkMsg.builder()
+                                .msgType("text")
+                                .text(text).build());
+                    }
+
+                    urlMap.put(province, url1);
+                });
 
                 JSONArray yearsArray = JSONUtil.parseArray(provinceYearInfo);
                 // 各省级行政区划对应的年份 List (2018-2020)

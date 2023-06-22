@@ -86,9 +86,10 @@ public class SubsidyCommon {
             int year = yearInfo.getYear();
             // 公示地址
             String publicUrl = yearInfo.getUrl();
-            if (year==2021 && StrUtil.isBlank(publicUrl) && StrUtil.contains(region,"黑龙江")){
-                publicUrl = "http://218.7.20.115:2021/pub/gongshi";
-            }
+            // 2022-03-20 黑龙江已正确
+            // if (year==2021 && StrUtil.isBlank(publicUrl) && StrUtil.contains(region,"黑龙江")){
+            //     publicUrl = "http://218.7.20.115:2021/pub/gongshi";
+            // }
             // 如果是像2021年那样,地址为空的,跳过执行下一年
             if (StrUtil.isBlank(publicUrl)) {
                 log.info("{} {} 年系统地址为空",region,year);
