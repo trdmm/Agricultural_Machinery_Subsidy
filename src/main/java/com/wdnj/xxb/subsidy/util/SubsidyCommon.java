@@ -72,7 +72,7 @@ public class SubsidyCommon {
         put("status","state");
     }};
 
-    private static final int MAX_PAGE_SIZE = 10;
+    private static final int MAX_PAGE_SIZE = 15;
     /**
      * 查询补贴数据
      *
