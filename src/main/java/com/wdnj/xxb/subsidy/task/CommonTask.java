@@ -24,7 +24,7 @@ import com.wdnj.xxb.subsidy.task.fhrunnable.GH_FuJianRunnable;
 import com.wdnj.xxb.subsidy.task.fhrunnable.GH_HubeiRunnable;
 import com.wdnj.xxb.subsidy.task.fhrunnable.GH_ZheJiangRunnable;
 import com.wdnj.xxb.subsidy.util.SubsidyCommon;
-import com.wdnj.xxb.subsidy.util.SubsidyHttpClient;
+import com.wdnj.xxb.subsidy.http.SubsidyHttpClient;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;

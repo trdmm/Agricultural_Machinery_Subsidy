@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.wdnj.xxb.subsidy.util.SubsidyCommon;
 import com.wdnj.xxb.subsidy.util.ConstantUtil;
-import com.wdnj.xxb.subsidy.util.SubsidyHttpClient;
+import com.wdnj.xxb.subsidy.http.SubsidyHttpClient;
 
 /**
  * 描述: 福建企业供货 Runnable<br/>

@@ -1,4 +1,4 @@
-package com.wdnj.xxb.subsidy.util;
+package com.wdnj.xxb.subsidy.http;
 
 import com.dtflys.forest.annotation.*;
 import com.dtflys.forest.callback.OnLoadCookie;
@@ -49,17 +49,22 @@ public interface SubsidyHttpClient {
 
     /**
      * 发送钉钉机器人消息
+     *
      * @param msg 钉钉消息(消息内容必须要包含"沃得")
      */
-    @Post(url = "https://oapi.dingtalk.com/robot/send?access_token=5db19a64bd908da40defb2a35e514372c2abb9e340b57d0fdaf33aba00a71752")
+    @Post(
+        url = "https://oapi.dingtalk.com/robot/send?access_token=5db19a64bd908da40defb2a35e514372c2abb9e340b57d0fdaf33aba00a71752",
+        interceptor = RateLimiterInterceptor.class
+    )
     void sendDingTalkMsg(@JSONBody DingTalkMsg msg);
 
     //@Get(url = "${url}", contentType = "multipart/form-data")
     @Get(url = "${url}")
-    String queryFhInfo(@DataVariable("url") String url,@Query("pageIndex") int pageIndex, @Query com.wdnj.xxb.subsidy.entity.factoryFhInfo.RequestBody requestBody);
+    String queryFhInfo(@DataVariable("url") String url, @Query("pageIndex") int pageIndex, @Query com.wdnj.xxb.subsidy.entity.factoryFhInfo.RequestBody requestBody);
 
     /**
      * 获取最新的url
+     *
      * @param url 请求连接的地址
      * @return JS文件
      */
@@ -68,14 +73,16 @@ public interface SubsidyHttpClient {
 
     /**
      * 获取新版的补贴数据
-     * @param url 查询地址
-     * @param body body
-     * @param pageNum 页数(第几页)
+     *
+     * @param url      查询地址
+     * @param urlPrefix 新版本请求头信息
+     * @param body     body
+     * @param pageNum  页数(第几页)
      * @param pageSize 每页显示的数量(10,20,30,40;目前不限制)
      * @return 补贴信息
      */
-    @Post(url = "${url}",headers = {
-        "urlprefix: 36.155.116.58"
+    @Post(url = "${url}", headers = {
+        "urlprefix: ${urlPrefix}"
     })
-    SubsidyInfoResponse getSubsidyInfo(@DataVariable("url") String url, @JSONBody RequestBodyNewer body, @Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
+    SubsidyInfoResponse getSubsidyInfo(@DataVariable("url") String url,@DataVariable("urlPrefix") String urlPrefix, @JSONBody RequestBodyNewer body, @Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
 }
