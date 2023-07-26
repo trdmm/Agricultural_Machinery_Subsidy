@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@ForestScan("com.wdnj.xxb.subsidy.util")
+@ForestScan("com.wdnj.xxb.subsidy.http")
 public class SubsidyApplication {
 
   public static void main(String[] args) {

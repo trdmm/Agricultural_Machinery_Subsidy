@@ -12,7 +12,7 @@ import com.google.common.util.concurrent.RateLimiter;
  * @since 2022-07-22 12:47
  */
 public class RateLimiterInterceptor<T> implements Interceptor<T> {
-    private final RateLimiter RATE_LIMITER = RateLimiter.create(18);
+    private final RateLimiter RATE_LIMITER = RateLimiter.create(0.3);
     @Override
     public boolean beforeExecute(ForestRequest request) {
         double acquire = RATE_LIMITER.acquire();
