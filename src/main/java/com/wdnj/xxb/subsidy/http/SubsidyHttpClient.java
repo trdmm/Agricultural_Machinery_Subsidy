@@ -81,8 +81,11 @@ public interface SubsidyHttpClient {
      * @param pageSize 每页显示的数量(10,20,30,40;目前不限制)
      * @return 补贴信息
      */
-    @Post(url = "${url}", headers = {
-        "urlprefix: ${urlPrefix}"
-    })
+    @Post(
+        url = "${url}",
+        headers = {
+        "urlprefix: ${urlPrefix}"},
+        interceptor = ProxyInterceptor.class
+    )
     SubsidyInfoResponse getSubsidyInfo(@DataVariable("url") String url,@DataVariable("urlPrefix") String urlPrefix, @JSONBody RequestBodyNewer body, @Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
 }
