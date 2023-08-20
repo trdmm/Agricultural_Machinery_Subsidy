@@ -3,6 +3,7 @@ package com.wdnj.xxb.subsidy.util;
 import java.io.File;
 import java.util.*;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.excel.EasyExcel;
@@ -11,6 +12,7 @@ import com.dtflys.forest.exceptions.ForestRuntimeException;
 import com.dtflys.forest.http.ForestCookie;
 import com.dtflys.forest.http.HttpStatus;
 import com.google.common.net.InetAddresses;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.wdnj.xxb.subsidy.entity.ding_talk.DingTalkMsg;
 import com.wdnj.xxb.subsidy.entity.ding_talk.Text;
 import com.wdnj.xxb.subsidy.entity.factoryFhInfo.FhInfo;
@@ -46,6 +48,7 @@ public class SubsidyCommon {
     private static final Set<String> newAppProvince = new HashSet<String>(){{
         add("江苏省");
         add("四川省");
+        add("内蒙古自治区");
     }};
 
     /**
@@ -76,6 +79,7 @@ public class SubsidyCommon {
     }};
 
     private static final int MAX_PAGE_SIZE = 15;
+
     /**
      * 查询补贴数据
      *
@@ -190,6 +194,13 @@ public class SubsidyCommon {
             (forestRequest, forestCookies) -> forestCookies.addAllCookies(cookies));
         /* 提取总页数(公示页提取总页数) */
         int pages = DocumentUtil.extractPages(clickQueryResult);
+        String t = DocumentUtil.extractT(clickQueryResult);
+        if (StrUtil.isBlank(t)) {
+          log.error("{} {} 年, 搜索后未提取到t值.", region, year);
+          return;
+        }
+
+        body.setT(t);
 
         // TODO(2021-10-12 黑龙江,内蒙古2021年查询故障)
         boolean searchError = false;
@@ -211,8 +222,9 @@ public class SubsidyCommon {
                 String result = httpClient.queryList(searchError?publicUrl:listUrl, i, body,
                     (forestRequest, forestCookies) -> forestCookies.addAllCookies(cookies));
                 /* 解析html中的补贴数据 */
-
-                List<SubsidyInfo> subsidyInfos = DocumentUtil.htmlToList(result, region, year);
+              t = DocumentUtil.extractT(result);
+              body.setT(t);
+              List<SubsidyInfo> subsidyInfos = DocumentUtil.htmlToList(result, region, year);
                 /* 解析的数据加入列表 */
                 list.addAll(subsidyInfos);
                 if (i % 30 == 0) {
@@ -277,7 +289,8 @@ public class SubsidyCommon {
 
         SubsidyInfoResponse subsidyInfoTest = null;
         try {
-            String urlPrefix = InetAddresses.fromInteger(RandomUtil.randomInt(7_9000_0000, 8_0000_0000)).getHostAddress();
+            // String urlPrefix = InetAddresses.fromInteger(RandomUtil.randomInt(7_9000_0000, 8_0000_0000)).getHostAddress();
+            String urlPrefix = "39.98.74.233";
             subsidyInfoTest = httpClient.getSubsidyInfo(url, urlPrefix, body, 1, MAX_PAGE_SIZE);
         } catch (Exception e) {
             log.error("{} {} 年查询页数出错.",region,year,e);
@@ -308,7 +321,8 @@ public class SubsidyCommon {
         for (int i = 1; i <= pages; i++) {
             try {
                 log.debug("开始爬取新版本 {} {} 年,第 {}/{} 页...", region, year, i, pages);
-                String urlPrefix = InetAddresses.fromInteger(RandomUtil.randomInt(7_9000_0000, 8_0000_0000)).getHostAddress();
+                // String urlPrefix = InetAddresses.fromInteger(RandomUtil.randomInt(7_9000_0000, 8_0000_0000)).getHostAddress();
+                String urlPrefix = "39.98.74.233";
 
                 SubsidyInfoResponse response = httpClient.getSubsidyInfo(url, urlPrefix, body, i, MAX_PAGE_SIZE);
 

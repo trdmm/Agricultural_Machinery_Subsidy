@@ -1,6 +1,8 @@
 package com.wdnj.xxb.subsidy.util;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.NumberUtil;
+import cn.hutool.core.util.StrUtil;
 import com.wdnj.xxb.subsidy.entity.factoryFhInfo.FhInfo;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.SubsidyInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +43,12 @@ public class DocumentUtil {
         Element tableBody = document.getElementById("list-pub");
         Elements trs = tableBody.select("tr");
         if (trs.size() == 1) {
-            // 没有数据,直接返回
+            // 没有数据,直接返回(也可能只有一条数据)
+          Element tr = trs.get(0);
+          Elements tds = tr.select("td");
+          if (tds.size() == 1) {
             return list;
+          }
         }
         if (year < 2021) {
             if (area.contains("江西")) {
@@ -295,14 +301,14 @@ public class DocumentUtil {
         Element cookieInput = tokenValue.get(0);
 
         // 页数
-        Elements pagerItem = document.getElementsByClass("pagerItem");
-        if (pagerItem.size() == 0) {
-            // 没数据,返回 null,调用方判断是否退出
-            return null;
-        }
-        Element lastPage = pagerItem.get(0).select("a").last();
-        String target = lastPage.attr("href");
-        int pages = NumberUtil.parseInt(target.split("=")[1]);
+        // Elements pagerItem = document.getElementsByClass("pagerItem");
+        // if (pagerItem.size() == 0) {
+        //     // 没数据,返回 null,调用方判断是否退出
+        //     return null;
+        // }
+        // Element lastPage = pagerItem.get(0).select("a").last();
+        // String target = lastPage.attr("href");
+        // int pages = NumberUtil.parseInt(target.split("=")[1]);
 
         return cookieInput.val();
     }
@@ -322,9 +328,29 @@ public class DocumentUtil {
 
             return NumberUtil.parseInt(target.split("=")[1]);
         } catch (Exception e) {
+          List<SubsidyInfo> subsidyInfos = DocumentUtil.htmlToList(html, "", 2023);
+          if (CollUtil.isNotEmpty(subsidyInfos)) {
+            return 1;
+          } else {
             return 0;
+          }
         }
     }
+
+  public static String extractT(String html) {
+    try {
+      Document document = Jsoup.parse(html);
+
+      Element listBg = document.getElementsByClass("list_bg").get(0);
+
+      Element script = listBg.getElementsByTag("script").get(0);
+      String data = script.data();
+      List<String> split = StrUtil.split(data, "'", true, true);
+      return split.get(1);
+    } catch (Exception e) {
+      return "";
+    }
+  }
 
     /**
      * 获取企业发货信息 页数
