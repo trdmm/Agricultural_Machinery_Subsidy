@@ -84,8 +84,8 @@ public interface SubsidyHttpClient {
     @Post(
         url = "${url}",
         headers = {
-        "urlprefix: ${urlPrefix}"},
-        interceptor = ProxyInterceptor.class
+        "urlprefix: ${urlPrefix}"}
+        // interceptor = ProxyInterceptor.class
     )
     SubsidyInfoResponse getSubsidyInfo(@DataVariable("url") String url,@DataVariable("urlPrefix") String urlPrefix, @JSONBody RequestBodyNewer body, @Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
 }
