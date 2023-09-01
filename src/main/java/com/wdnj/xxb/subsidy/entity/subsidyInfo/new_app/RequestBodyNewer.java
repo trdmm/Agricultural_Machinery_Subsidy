@@ -15,6 +15,9 @@ public class RequestBodyNewer {
 	@JSONField(name="year")
 	private int year;
 
+  @JSONField(name="code")
+  private String code;
+
 	@JSONField(name="purchaseDateStart")
 	private String purchaseDateStart;
 
