@@ -8,6 +8,8 @@ import com.wdnj.xxb.subsidy.entity.subsidyInfo.new_app.RequestBodyNewer;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.new_app.SubsidyInfoResponse;
 import com.wdnj.xxb.subsidy.entity.subsidyInfo.old_app.RequestBodyOlder;
 
+import java.util.List;
+
 /**
  * 描述:...<br>
  *
@@ -88,4 +90,7 @@ public interface SubsidyHttpClient {
         // interceptor = ProxyInterceptor.class
     )
     SubsidyInfoResponse getSubsidyInfo(@DataVariable("url") String url,@DataVariable("urlPrefix") String urlPrefix, @JSONBody RequestBodyNewer body, @Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
+
+    @Get
+    String getProxyInfo();
 }

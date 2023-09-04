@@ -1,7 +1,11 @@
 package com.wdnj.xxb.subsidy.service.impl;
 
+import cn.hutool.core.util.NumberUtil;
+import cn.hutool.core.util.StrUtil;
 import com.wdnj.xxb.subsidy.entity.ProxyServerInfo;
+import com.wdnj.xxb.subsidy.http.SubsidyHttpClient;
 import com.wdnj.xxb.subsidy.service.IProxyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,9 +17,21 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ProxyServiceImpl implements IProxyService {
-    @Override
-    public ProxyServerInfo getProxyServer() {
-        // TODO(获取代理服务器)
-        return null;
+  @Autowired
+  private SubsidyHttpClient httpClient;
+
+  @Override
+  public ProxyServerInfo getProxyServer() {
+    // TODO(获取代理服务器)
+    String proxyInfo = httpClient.getProxyInfo();
+    if (StrUtil.isNotBlank(proxyInfo)) {
+      String[] split = StrUtil.splitToArray(proxyInfo, ':');
+      ProxyServerInfo proxyServerInfo = new ProxyServerInfo();
+      proxyServerInfo.setProxyServerHost(split[0]);
+      proxyServerInfo.setProxyServerPort(NumberUtil.parseInt(split[1]));
+
+      return proxyServerInfo;
     }
+    return null;
+  }
 }
